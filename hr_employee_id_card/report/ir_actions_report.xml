@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="paperformat_employee_id_card" model="report.paperformat">
+        <field name="name">PVC ID Card (CR80) Side-by-Side</field>
+        <field name="default" eval="False"/>
+        <field name="format">custom</field>
+        <field name="page_width">74</field>
+        <field name="page_height">55</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">0</field>
+        <field name="margin_bottom">0</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">96</field>
+        <field name="css_margins" eval="True"/>
+    </record>
+
+    <record id="action_report_employee_id_card" model="ir.actions.report">
+        <field name="name">Custom ID Card</field>
+        <field name="model">hr.employee</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">hr_employee_id_card.report_employee_id_card_template</field>
+        <field name="report_file">hr_employee_id_card.report_employee_id_card_template</field>
+        <field name="print_report_name">'ID_Card_%s' % (object.name)</field>
+        <field name="binding_model_id" ref="hr.model_hr_employee"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_employee_id_card"/>
+    </record>
+</odoo>

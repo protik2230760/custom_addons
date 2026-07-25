@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_employee_id_card_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <style>
+                    @page {
+                        size: 74mm 55mm;
+                        margin: 0;
+                    }
+                    body {
+                        margin: 0;
+                        padding: 0;
+                        background-color: #ffffff;
+                    }
+                    .id-card-container {
+                        width: 35mm;
+                        height: 55mm;
+                        position: relative;
+                        box-sizing: border-box;
+                        overflow: hidden;
+                        background-color: #f2f2f2;
+                        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                        margin: 0;
+                        padding: 0;
+                        border-radius: 2.5mm;
+                        border: 0.2mm solid #cbd5e1;
+                    }
+                    .id-card-container.back {
+                        background-color: #f2f2f2;
+                    }
+                    img {
+                        border: 0 !important;
+                        border-style: none !important;
+                        outline: none !important;
+                    }
+                </style>
+
+                <!-- SINGLE PAGE CONTAINING BOTH FRONT AND BACK SIDE-BY-SIDE -->
+                <div class="page" style="width: 74mm; height: 55mm; margin: 0 !important; padding: 0 !important; overflow: hidden !important; page-break-after: always !important; page-break-inside: avoid !important;">
+                    
+                    <!-- 1. FRONT SIDE (LEFT) -->
+                    <div class="id-card-container front" style="float: left;">
+                        <!-- Top Header: Logo and Company Name side-by-side (height 18px) -->
+                        <div style="position: absolute; top: 2.5mm; left: 0; width: 35mm; height: 18px;">
+                            <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
+                                <tr>
+                                    <td style="text-align: right; width: 9.5mm; padding-right: 1mm; vertical-align: middle; border: none; padding-top: 0; padding-bottom: 0;">
+                                        <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="height: 18px; max-width: 8.5mm; display: inline-block; vertical-align: middle; border: 0; outline: none;" onerror="this.style.display='none';"/>
+                                    </td>
+                                    <td style="text-align: left; width: 25.5mm; vertical-align: middle; border: none; padding-top: 0; padding-bottom: 0;">
+                                        <span style="font-size: 10.5px; font-weight: bold; color: #002d62; text-transform: uppercase; letter-spacing: -0.2px; display: inline-block; vertical-align: middle; line-height: 18px; font-family: Arial, sans-serif; height: 18px; white-space: nowrap;">
+                                            <span t-field="o.company_id.name"/>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Employee Photo with 2px Blue Border & 8px Rounded Corners (Centered at left: 8.5mm) -->
+                        <div style="position: absolute; top: 10.5mm; left: 8.5mm; width: 18mm; height: 20mm; border: 2px solid #002d62; border-radius: 8px; overflow: hidden; background-color: #ffffff; box-sizing: border-box; display: flex; align-items: center; justify-content: center;">
+                            <img t-if="o.image_1920" t-att-src="image_data_uri(o.image_1920)" style="width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 6px; border: 0; outline: none;" onerror="this.style.display='none';"/>
+                            <img t-else="" src="/web/static/img/placeholder.png" style="width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 6px; border: 0; outline: none;"/>
+                        </div>
+
+                        <!-- Employee Details with Blue Font for ID and Blood Group -->
+                        <div style="position: absolute; top: 31mm; left: 0; width: 35mm; text-align: center; padding: 0 1.2mm; box-sizing: border-box;">
+                            <div style="font-size: 7.6px; font-weight: bold; color: #002d62; line-height: 1.15;"><span t-field="o.name"/></div>
+                            <div style="font-size: 5.8px; color: #475569; margin-top: 0.3mm; font-weight: 500; line-height: 1.1;"><span t-field="o.job_title"/></div>
+                            <div style="font-size: 5px; color: #64748b; margin-top: 0.2mm; line-height: 1.1;"><span t-field="o.department_id.name"/></div>
+                            <div style="font-size: 6.4px; font-weight: bold; color: #002d62; margin-top: 0.8mm; line-height: 1.1;">
+                                ID No: <span t-field="o.identification_id"/>
+                            </div>
+                            <div style="font-size: 6.4px; font-weight: bold; color: #002d62; margin-top: 0.2mm; line-height: 1.1;" t-if="o.blood_group">
+                                Blood Group: <span t-field="o.blood_group"/>
+                            </div>
+                        </div>
+
+                        <!-- Signatures side-by-side with a line above each -->
+                        <div style="position: absolute; bottom: 1.5mm; left: 2.5mm; width: 30mm; height: 7mm;">
+                            <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
+                                <tr>
+                                    <!-- Employee Signature -->
+                                    <td style="width: 12.5mm; text-align: center; vertical-align: bottom; padding: 0; border: none;">
+                                        <div style="height: 3.5mm; line-height: 3.5mm; text-align: center; vertical-align: bottom; overflow: hidden;">
+                                            <img t-if="o.employee_signature" t-att-src="image_data_uri(o.employee_signature)" style="max-height: 3.5mm; max-width: 12mm; display: inline-block; vertical-align: bottom; border: 0; outline: none;" onerror="this.style.display='none';"/>
+                                        </div>
+                                        <div style="border-top: 1px solid #475569; font-size: 3.8px; color: #475569; padding-top: 0.3mm; font-weight: bold; text-transform: uppercase; white-space: nowrap;">
+                                            Employee Signature
+                                        </div>
+                                    </td>
+                                    <!-- Gap -->
+                                    <td style="width: 5mm; border: none; padding: 0;"></td>
+                                    <!-- Authorized Signature -->
+                                    <td style="width: 12.5mm; text-align: center; vertical-align: bottom; padding: 0; border: none;">
+                                        <div style="height: 3.5mm; line-height: 3.5mm; text-align: center; vertical-align: bottom; overflow: hidden;">
+                                            <img t-if="o.company_id.authorized_signature" t-att-src="image_data_uri(o.company_id.authorized_signature)" style="max-height: 3.5mm; max-width: 12mm; display: inline-block; vertical-align: bottom; border: 0; outline: none;" onerror="this.style.display='none';"/>
+                                        </div>
+                                        <div style="border-top: 1px solid #475569; font-size: 3.8px; color: #475569; padding-top: 0.3mm; font-weight: bold; text-transform: uppercase; white-space: nowrap;">
+                                            Authorised Signature
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 2. BACK SIDE (RIGHT) -->
+                    <div class="id-card-container back" style="float: left; margin-left: 4mm;">
+                        <!-- Vertically Oriented dot-matrix style Serial Number along the left edge -->
+                        <div style="position: absolute; left: 5mm; bottom: 8mm; -webkit-transform: rotate(-90deg); -webkit-transform-origin: left bottom; transform: rotate(-90deg); transform-origin: left bottom; font-family: 'Courier New', Courier, monospace; font-size: 4.6px; font-weight: bold; color: #000000; letter-spacing: 0.8px; white-space: nowrap; width: 35mm; text-align: left; height: 10px; line-height: 10px;">
+                            <span t-out="o.identification_id or '00003985107 060152947'"/>
+                        </div>
+
+                        <!-- Company Website starting with www. -->
+                        <div style="position: absolute; top: 2mm; left: 0; width: 35mm; text-align: center; font-size: 7px; font-weight: bold; color: #002d62;">
+                            www.<span t-out="o.company_id.website and o.company_id.website.replace('https://', '').replace('http://', '').replace('www.', '').rstrip('/') or 'friendship.ngo'"/>
+                        </div>
+
+                        <!-- Central Logo Icon -->
+                        <div style="position: absolute; top: 5.5mm; left: 0; width: 35mm; height: 15.5mm; text-align: center; display: flex; align-items: center; justify-content: center;">
+                            <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 15.5mm; max-width: 20mm; object-fit: contain; display: inline-block; border: 0; outline: none;" onerror="this.style.display='none';"/>
+                        </div>
+
+                        <!-- Emergency Contact -->
+                        <div style="position: absolute; top: 22.5mm; left: 0; width: 35mm; text-align: center;">
+                            <div style="font-size: 6.2px; font-weight: bold; color: #475569; text-transform: uppercase; letter-spacing: 0.2px;">Emergency Contact</div>
+                            <div style="font-size: 7.8px; font-weight: bold; color: #002d62; margin-top: 0.4mm;">
+                                <span t-field="o.company_id.company_emergency_contact"/>
+                            </div>
+                        </div>
+
+                        <!-- Return Information with spacing gap at 35mm -->
+                        <div style="position: absolute; top: 34.5mm; left: 2mm; width: 31mm; text-align: center; font-size: 5.3px; color: #334155; line-height: 1.2;">
+                            <div style="font-weight: bold; color: #1e293b; font-size: 5.8px; margin-bottom: 0.4mm; text-transform: uppercase;">If found please return to:</div>
+                            <div style="font-weight: bold; color: #002d62; font-size: 5.8px;">Friendship Head Office:</div>
+                            <div style="margin-top: 0.3mm;">
+                                <span t-field="o.company_id.street"/>
+                                <t t-if="o.company_id.street2">, <span t-field="o.company_id.street2"/></t>
+                            </div>
+                            <div>
+                                <span t-field="o.company_id.city"/>
+                                <t t-if="o.company_id.zip"> - <span t-field="o.company_id.zip"/></t>
+                                <t t-if="o.company_id.country_id">, <span t-field="o.company_id.country_id.name"/></t>
+                            </div>
+                            <div style="margin-top: 0.3mm;" t-if="o.company_id.phone">
+                                Phone: <span t-field="o.company_id.phone"/>
+                            </div>
+                            <div style="margin-top: 0.3mm;" t-if="o.company_id.company_fax">
+                                Fax: <span t-field="o.company_id.company_fax"/>
+                            </div>
+                            <div style="margin-top: 0.3mm;" t-if="o.company_id.email">
+                                Email: <span t-field="o.company_id.email"/>
+                            </div>
+                        </div>
+
+                        <!-- Barcode and QR Code side-by-side (without default border on missing image) -->
+                        <div style="position: absolute; bottom: 1.5mm; left: 2.5mm; width: 30mm; height: 7.5mm;">
+                            <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
+                                <tr>
+                                    <!-- Barcode -->
+                                    <td style="width: 19mm; text-align: left; vertical-align: middle; padding: 0; border: none;">
+                                        <t t-if="o.identification_id">
+                                            <img t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', o.identification_id, 150, 40)" style="max-width: 18mm; height: 5mm; display: block; border: 0 !important; outline: none !important;" onerror="this.style.display='none';" alt=""/>
+                                        </t>
+                                    </td>
+                                    <!-- QR Code -->
+                                    <td style="width: 11mm; text-align: right; vertical-align: middle; padding: 0; border: none;">
+                                        <t t-set="qr_value" t-value="'Name: %s\nID: %s\nDept: %s\nCompany: %s' % (o.name or '', o.identification_id or '', o.department_id.name or '', o.company_id.name or '')"/>
+                                        <img t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('QR', qr_value, 70, 70)" style="width: 7.5mm; height: 7.5mm; display: inline-block; vertical-align: middle; border: 0 !important; outline: none !important;" onerror="this.style.display='none';" alt=""/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

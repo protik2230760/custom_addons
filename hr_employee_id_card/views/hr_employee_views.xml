@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_employee_form_inherit_id_card" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.id.card</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='work_information']/div/div[@id='o_work_information']/group[1]" position="after">
+                <group string="ID Card Details">
+                    <field name="identification_id"/>
+                    <field name="blood_group"/>
+                    <field name="employee_signature" widget="image" options="{'size': [150, 60]}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
