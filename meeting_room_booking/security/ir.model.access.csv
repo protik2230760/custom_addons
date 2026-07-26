@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_meeting_room_amenity_user,meeting.room.amenity.user,model_meeting_room_amenity,group_meeting_room_user,1,0,0,0
+access_meeting_room_amenity_manager,meeting.room.amenity.manager,model_meeting_room_amenity,group_meeting_room_manager,1,1,1,1
+access_meeting_room_user,meeting.room.user,model_meeting_room,group_meeting_room_user,1,0,0,0
+access_meeting_room_manager,meeting.room.manager,model_meeting_room,group_meeting_room_manager,1,1,1,1
+access_meeting_room_booking_user,meeting.room.booking.user,model_meeting_room_booking,group_meeting_room_user,1,1,1,0
+access_meeting_room_booking_manager,meeting.room.booking.manager,model_meeting_room_booking,group_meeting_room_manager,1,1,1,1

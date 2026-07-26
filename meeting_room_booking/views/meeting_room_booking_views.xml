@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Booking List View -->
+    <record id="view_meeting_room_booking_tree" model="ir.ui.view">
+        <field name="name">meeting.room.booking.tree</field>
+        <field name="model">meeting.room.booking</field>
+        <field name="arch" type="xml">
+            <list string="Bookings" decoration-info="status == 'draft'" decoration-success="status == 'confirmed'" decoration-muted="status in ('cancelled', 'rejected')" decoration-primary="status == 'done'">
+                            <field name="name"/>
+                            <field name="room_id"/>
+                            <field name="purpose"/>
+                            <field name="organizer_id" widget="many2one_avatar_user"/>
+                            <field name="start_time"/>
+                            <field name="end_time"/>
+                            <field name="attendees_count" sum="Total Attendees"/>
+                            <field name="status" widget="badge" decoration-info="status == 'draft'" decoration-success="status == 'confirmed'" decoration-muted="status in ('cancelled', 'rejected')" decoration-primary="status == 'done'"/>
+                        </list>
+        </field>
+    </record>
+
+    <!-- Booking Form View -->
+    <record id="view_meeting_room_booking_form" model="ir.ui.view">
+        <field name="name">meeting.room.booking.form</field>
+        <field name="model">meeting.room.booking</field>
+        <field name="arch" type="xml">
+            <form string="Meeting Room Booking">
+                            <header>
+                                <button name="action_confirm" string="Approve &amp; Confirm" type="object" class="oe_highlight" invisible="status != 'draft'" groups="meeting_room_booking.group_meeting_room_manager"/>
+                                <button name="action_reject" string="Reject" type="object" class="btn-danger" invisible="status != 'draft'" groups="meeting_room_booking.group_meeting_room_manager"/>
+                                <button name="action_done" string="Mark as Done" type="object" class="oe_highlight" invisible="status != 'confirmed'"/>
+                                <button name="action_cancel" string="Cancel Booking" type="object" invisible="status not in ('draft', 'confirmed')"/>
+                                <button name="action_draft" string="Reset to Draft" type="object" invisible="status not in ('cancelled', 'rejected')" groups="meeting_room_booking.group_meeting_room_manager"/>
+                                <field name="status" widget="statusbar" statusbar_visible="draft,confirmed,done"/>
+                            </header>
+                            <sheet>
+                                <widget name="web_ribbon" title="Confirmed" bg_color="text-bg-success" invisible="status != 'confirmed'"/>
+                                <widget name="web_ribbon" title="Done" bg_color="text-bg-primary" invisible="status != 'done'"/>
+                                <widget name="web_ribbon" title="Rejected" bg_color="text-bg-danger" invisible="status != 'rejected'"/>
+                                <widget name="web_ribbon" title="Cancelled" bg_color="text-bg-secondary" invisible="status != 'cancelled'"/>
+            
+                                <div class="oe_title">
+                                    <label for="purpose" string="Meeting Subject"/>
+                                    <h1>
+                                        <field name="purpose" placeholder="e.g. Weekly Operations Sync" required="1"/>
+                                    </h1>
+                                    <h4 class="text-muted" invisible="name == 'New'">
+                                        <field name="name"/>
+                                    </h4>
+                                </div>
+            
+                                <group>
+                                    <group string="Where &amp; Who">
+                                        <field name="room_id" options="{'no_create': True, 'no_open': False}" placeholder="Choose a meeting room..."/>
+                                        <field name="attendees_count" string="Attendees Count"/>
+                                        <field name="organizer_id" widget="many2one_avatar_user" readonly="status != 'draft'" string="Organizer"/>
+                                    </group>
+                                    <group string="When">
+                                        <field name="start_time" string="Start Time"/>
+                                        <field name="end_time" string="End Time"/>
+                                    </group>
+                                </group>
+            
+                                <notebook>
+                                    <page string="Meeting Agenda &amp; Details" name="description">
+                                        <field name="description" placeholder="Add meeting links (e.g. Google Meet, Zoom), agenda topics, or notes..." widget="html"/>
+                                    </page>
+                                </notebook>
+                            </sheet>
+                            <chatter/>
+                        </form>
+        </field>
+    </record>
+
+    <!-- Booking Calendar View -->
+    <record id="view_meeting_room_booking_calendar" model="ir.ui.view">
+        <field name="name">meeting.room.booking.calendar</field>
+        <field name="model">meeting.room.booking</field>
+        <field name="arch" type="xml">
+            <calendar string="Bookings" date_start="start_time" date_stop="end_time" color="status" quick_create="0" mode="week">
+                            <field name="room_id"/>
+                            <field name="organizer_id" avatar_field="avatar_128"/>
+                            <field name="purpose"/>
+                            <field name="status"/>
+                        </calendar>
+        </field>
+    </record>
+
+    <!-- Booking Kanban View -->
+    <record id="view_meeting_room_booking_kanban" model="ir.ui.view">
+        <field name="name">meeting.room.booking.kanban</field>
+        <field name="model">meeting.room.booking</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="status" class="o_kanban_small_column" records_draggable="false" quick_create="false">
+                            <field name="status"/>
+                            <templates>
+                                <t t-name="card" class="flex-column oe_kanban_global_click card p-3 mb-2 shadow-sm rounded border-0">
+                                    <div class="oe_kanban_details">
+                                        <div class="row mb-1">
+                                            <div class="col-8">
+                                                <strong class="o_kanban_record_title text-primary fs-6"><field name="name"/></strong>
+                                            </div>
+                                            <div class="col-4 text-end">
+                                                <field name="status" widget="label_selection" options="{'classes': {'draft': 'info', 'confirmed': 'success', 'done': 'primary', 'cancelled': 'default', 'rejected': 'danger'}}"/>
+                                            </div>
+                                        </div>
+                                        <div class="my-1">
+                                            <strong>Room:</strong> <field name="room_id"/>
+                                        </div>
+                                        <div class="my-1">
+                                            <strong>Purpose:</strong> <field name="purpose"/>
+                                        </div>
+                                        <div class="d-flex align-items-center justify-content-between mt-2">
+                                            <span class="text-muted small">
+                                                <field name="start_time" widget="datetime"/>
+                                            </span>
+                                            <field name="organizer_id" widget="many2one_avatar_user"/>
+                                        </div>
+                                    </div>
+                                </t>
+                            </templates>
+                        </kanban>
+        </field>
+    </record>
+
+    <!-- Booking Search View -->
+    <record id="view_meeting_room_booking_search" model="ir.ui.view">
+        <field name="name">meeting.room.booking.search</field>
+        <field name="model">meeting.room.booking</field>
+        <field name="arch" type="xml">
+            <search string="Search Bookings">
+                            <field name="name"/>
+                            <field name="room_id"/>
+                            <field name="organizer_id"/>
+                            <field name="purpose"/>
+                            
+                            <!-- Quick Filters -->
+                            <filter string="My Bookings" name="my_bookings" domain="[('organizer_id', '=', uid)]"/>
+                            <separator/>
+                            <filter string="Today" name="today" domain="[('booking_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                            <filter string="This Week" name="this_week" domain="[                     ('booking_date', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d')),                     ('booking_date', '&lt;=', (context_today() + datetime.timedelta(days=6 - context_today().weekday())).strftime('%Y-%m-%d'))                 ]"/>
+                            <separator/>
+                            <filter string="Draft / Pending" name="status_draft" domain="[('status', '=', 'draft')]"/>
+                            <filter string="Confirmed" name="status_confirmed" domain="[('status', '=', 'confirmed')]"/>
+                            <filter string="Done" name="status_done" domain="[('status', '=', 'done')]"/>
+                            
+                            <!-- Group By Options -->
+                            <group name="group_by">
+                                <filter string="Meeting Room" name="group_by_room" domain="[]" context="{'group_by': 'room_id'}"/>
+                                <filter string="Organizer" name="group_by_organizer" domain="[]" context="{'group_by': 'organizer_id'}"/>
+                                <filter string="Status" name="group_by_status" domain="[]" context="{'group_by': 'status'}"/>
+                                <filter string="Booking Date" name="group_by_date" domain="[]" context="{'group_by': 'booking_date'}"/>
+                            </group>
+                        </search>
+        </field>
+    </record>
+
+    <!-- Booking Action -->
+    <record id="action_meeting_room_booking" model="ir.actions.act_window">
+        <field name="name">Bookings</field>
+        <field name="res_model">meeting.room.booking</field>
+        <field name="view_mode">list,calendar,kanban,form</field>
+        <field name="search_view_id" ref="view_meeting_room_booking_search"/>
+        <field name="context">{'search_default_my_bookings': 0}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Book a meeting room!
+            </p>
+            <p>
+                Select a meeting room, date, and start/end time. The system will automatically prevent overlapping bookings.
+            </p>
+        </field>
+    </record>
+</odoo>

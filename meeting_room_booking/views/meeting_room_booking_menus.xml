@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Root Menu -->
+    <menuitem id="menu_meeting_room_booking_root"
+              name="Meeting Rooms"
+              web_icon="meeting_room_booking,static/description/icon.png"
+              sequence="10"/>
+
+    <!-- Sub-menus under Root -->
+    <menuitem id="menu_meeting_room_booking_bookings"
+              name="Bookings"
+              parent="menu_meeting_room_booking_root"
+              action="action_meeting_room_booking"
+              sequence="10"/>
+
+    <menuitem id="menu_meeting_room_booking_rooms"
+              name="Meeting Rooms"
+              parent="menu_meeting_room_booking_root"
+              action="action_meeting_room"
+              sequence="20"/>
+
+    <!-- Configuration Parent Menu -->
+    <menuitem id="menu_meeting_room_booking_configuration"
+              name="Configuration"
+              parent="menu_meeting_room_booking_root"
+              sequence="100"
+              groups="group_meeting_room_manager"/>
+
+    <!-- Amenities Menu under Configuration -->
+    <menuitem id="menu_meeting_room_booking_amenities"
+              name="Amenities"
+              parent="menu_meeting_room_booking_configuration"
+              action="action_meeting_room_amenity"
+              sequence="10"/>
+</odoo>

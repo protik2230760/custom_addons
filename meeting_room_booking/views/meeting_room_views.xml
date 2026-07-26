@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Amenity List View -->
+    <record id="view_meeting_room_amenity_tree" model="ir.ui.view">
+        <field name="name">meeting.room.amenity.tree</field>
+        <field name="model">meeting.room.amenity</field>
+        <field name="arch" type="xml">
+            <list string="Amenities" editable="bottom">
+                <field name="name"/>
+                <field name="color" widget="color_picker"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Meeting Room List View -->
+    <record id="view_meeting_room_tree" model="ir.ui.view">
+        <field name="name">meeting.room.tree</field>
+        <field name="model">meeting.room</field>
+        <field name="arch" type="xml">
+            <list string="Meeting Rooms">
+                <field name="name"/>
+                <field name="capacity"/>
+                <field name="location"/>
+                <field name="amenity_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Meeting Room Form View -->
+    <record id="view_meeting_room_form" model="ir.ui.view">
+        <field name="name">meeting.room.form</field>
+        <field name="model">meeting.room</field>
+        <field name="arch" type="xml">
+            <form string="Meeting Room">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_bookings" type="object" class="oe_stat_button" icon="fa-calendar">
+                            <field name="booking_count" widget="statinfo" string="Bookings"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Room Name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Boardroom A"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="capacity"/>
+                            <field name="location" placeholder="e.g. 2nd Floor, Wing B"/>
+                        </group>
+                        <group>
+                            <field name="amenity_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}" placeholder="Add amenities..."/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Specify any additional information or instructions for this room..."/>
+                        </page>
+                        <page string="Recent Bookings" name="bookings">
+                            <field name="booking_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="purpose"/>
+                                    <field name="organizer_id"/>
+                                    <field name="start_time"/>
+                                    <field name="end_time"/>
+                                    <field name="status" widget="badge" decoration-info="status == 'draft'" decoration-success="status == 'confirmed'" decoration-muted="status in ('cancelled', 'rejected')" decoration-primary="status == 'done'"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Meeting Room Search View -->
+    <record id="view_meeting_room_search" model="ir.ui.view">
+        <field name="name">meeting.room.search</field>
+        <field name="model">meeting.room</field>
+        <field name="arch" type="xml">
+            <search string="Search Meeting Rooms">
+                <field name="name"/>
+                <field name="location"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <group name="group_by">
+                    <filter string="Location" name="group_by_location" domain="[]" context="{'group_by': 'location'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_meeting_room" model="ir.actions.act_window">
+        <field name="name">Meeting Rooms</field>
+        <field name="res_model">meeting.room</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_meeting_room_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a meeting room!
+            </p>
+        </field>
+    </record>
+
+    <record id="action_meeting_room_amenity" model="ir.actions.act_window">
+        <field name="name">Amenities</field>
+        <field name="res_model">meeting.room.amenity</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create amenities!
+            </p>
+        </field>
+    </record>
+</odoo>
