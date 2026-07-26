@@ -126,6 +126,19 @@ class MeetingRoomBooking(models.Model):
                     "The number of attendees (%d) exceeds the capacity of the room '%s' (%d)."
                 ) % (rec.attendees_count, rec.room_id.name, rec.room_id.capacity))
 
+    @api.onchange('room_id', 'attendees_count')
+    def _onchange_room_capacity(self):
+        if self.room_id and self.attendees_count > self.room_id.capacity:
+            room_name = self.room_id.name
+            capacity = self.room_id.capacity
+            self.room_id = False
+            return {
+                'warning': {
+                    'title': _("Room Capacity Exceeded"),
+                    'message': _("The number of attendees (%d) exceeds the capacity of '%s' (%d). The room selection has been reset.") % (self.attendees_count, room_name, capacity)
+                }
+            }
+
     @api.onchange('room_id', 'start_time', 'end_time')
     def _onchange_room_availability(self):
         if self.room_id and self.start_time and self.end_time:
