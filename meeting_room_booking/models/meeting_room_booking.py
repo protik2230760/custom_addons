@@ -155,35 +155,7 @@ class MeetingRoomBooking(models.Model):
             ])
             rec.has_participant_conflicts = bool(overlap_bookings)
 
-    @api.depends('room_id.name', 'purpose', 'organizer_id.name', 'status', 'start_time', 'end_time')
-    def _compute_display_name(self):
-        for rec in self:
-            time_str = ""
-            if rec.start_time and rec.end_time:
-                user_tz = self.env.user.tz or 'UTC'
-                import pytz
-                try:
-                    utc_start = pytz.utc.localize(rec.start_time)
-                    utc_end = pytz.utc.localize(rec.end_time)
-                    local_tz = pytz.timezone(user_tz)
-                    local_start = utc_start.astimezone(local_tz)
-                    local_end = utc_end.astimezone(local_tz)
-                    time_str = "%s – %s" % (local_start.strftime('%I:%M %p'), local_end.strftime('%I:%M %p'))
-                except Exception:
-                    time_str = "%s – %s" % (rec.start_time.strftime('%H:%M'), rec.end_time.strftime('%H:%M'))
-            
-            room = rec.room_id.name or "No Room"
-            purpose = rec.purpose or "No Subject"
-            organizer = rec.organizer_id.name or "N/A"
-            status_val = dict(self._fields['status'].selection).get(rec.status, '')
 
-            rec.display_name = "%s\n%s\n%s\nOrganizer: %s\n%s" % (
-                room,
-                time_str,
-                purpose,
-                organizer,
-                status_val
-            )
 
     @api.model
     def get_dashboard_summary(self):

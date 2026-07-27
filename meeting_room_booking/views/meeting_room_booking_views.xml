@@ -84,7 +84,7 @@
         <field name="name">meeting.room.booking.calendar</field>
         <field name="model">meeting.room.booking</field>
         <field name="arch" type="xml">
-            <calendar string="Bookings" date_start="start_time" date_stop="end_time" color="color_index" quick_create="0" mode="week" js_class="meeting_room_booking_calendar" event_open_popup="true">
+            <calendar string="Bookings" date_start="start_time" date_stop="end_time" color="color_index" quick_create="0" mode="week" js_class="meeting_room_booking_calendar">
                             <field name="room_id"/>
                             <field name="organizer_id" avatar_field="avatar_128"/>
                             <field name="purpose"/>
