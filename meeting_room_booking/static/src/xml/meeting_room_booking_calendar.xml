@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
     <t t-name="meeting_room_booking.CalendarController" t-inherit="web.CalendarController" t-inherit-mode="primary">
-        <xpath expr="//div[hasclass('o_calendar_container')]/div[hasclass('o_calendar_header')]" position="before">
+        <xpath expr="//div[contains(@class, 'o_calendar_container')]/div[contains(@class, 'o_calendar_header')]" position="before">
             <!-- Modern and Clean Dashboard Summary Header -->
             <div class="o_calendar_dashboard d-flex gap-3 px-3 py-2 border-bottom bg-light flex-wrap align-items-center justify-content-between" style="background-color: #f8fafc !important;">
                 <div class="d-flex gap-3 align-items-center flex-wrap">
