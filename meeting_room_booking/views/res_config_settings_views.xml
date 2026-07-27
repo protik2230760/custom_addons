@@ -7,7 +7,7 @@
         <field name="inherit_id" ref="base.res_config_settings_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//form" position="inside">
-                <app data-string="Meeting Room Booking" string="Meeting Room Booking" key="meeting_room_booking">
+                <app data-string="Meeting Room Booking" string="Meeting Room Booking" name="meeting_room_booking">
                     <block title="Meeting Room Booking Settings" name="meeting_room_booking_settings">
                         <setting string="Email Notifications" help="Enable automatically sending email notifications for bookings">
                             <field name="module_meeting_room_booking_email_notifications"/>
