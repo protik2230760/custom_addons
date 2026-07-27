@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Meeting Invitation Template -->
+    <record id="email_template_meeting_invitation" model="mail.template">
+        <field name="name">Meeting Invitation</field>
+        <field name="model_id" ref="meeting_room_booking.model_meeting_room_booking"/>
+        <field name="subject">Meeting Invitation: {{ object.purpose }}</field>
+        <field name="body_html" type="html">
+            <div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.5;">
+                <p>Hello,</p>
+                <p>You have been invited to a meeting. Here are the details:</p>
+                <table style="width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 20px;">
+                    <tr>
+                        <td style="width: 150px; font-weight: bold; padding: 5px; border-bottom: 1px solid #eee;">Subject/Purpose:</td>
+                        <td style="padding: 5px; border-bottom: 1px solid #eee;"><t t-out="object.purpose"/></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold; padding: 5px; border-bottom: 1px solid #eee;">Meeting Room:</td>
+                        <td style="padding: 5px; border-bottom: 1px solid #eee;"><t t-out="object.room_id.name"/> (Floor: <t t-out="object.room_id.floor or 'N/A'"/>)</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold; padding: 5px; border-bottom: 1px solid #eee;">Start Time:</td>
+                        <td style="padding: 5px; border-bottom: 1px solid #eee;"><t t-out="object.start_time"/> UTC</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold; padding: 5px; border-bottom: 1px solid #eee;">End Time:</td>
+                        <td style="padding: 5px; border-bottom: 1px solid #eee;"><t t-out="object.end_time"/> UTC</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold; padding: 5px; border-bottom: 1px solid #eee;">Organizer:</td>
+                        <td style="padding: 5px; border-bottom: 1px solid #eee;"><t t-out="object.organizer_id.name"/></td>
+                    </tr>
+                </table>
+                <p><strong>Agenda &amp; Details:</strong></p>
+                <div style="background-color: #f9f9f9; padding: 15px; border: 1px solid #ddd; border-radius: 4px;">
+                    <t t-out="object.description or 'No agenda provided'"/>
+                </div>
+                <p style="margin-top: 20px;">Best regards,<br/>Meeting Room Booking System</p>
+            </div>
+        </field>
+    </record>
+
+    <!-- Meeting Rescheduled Template -->
+    <record id="email_template_meeting_rescheduled" model="mail.template">
+        <field name="name">Meeting Rescheduled</field>
+        <field name="model_id" ref="meeting_room_booking.model_meeting_room_booking"/>
+        <field name="subject">Meeting Rescheduled: {{ object.purpose }}</field>
+        <field name="body_html" type="html">
+            <div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.5;">
+                <p>Hello,</p>
+                <p>This meeting has been rescheduled. Here are the updated details:</p>
+                <table style="width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 20px;">
+                    <tr>
+                        <td style="width: 150px; font-weight: bold; padding: 5px; border-bottom: 1px solid #eee;">Subject/Purpose:</td>
+                        <td style="padding: 5px; border-bottom: 1px solid #eee;"><t t-out="object.purpose"/></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold; padding: 5px; border-bottom: 1px solid #eee;">Meeting Room:</td>
+                        <td style="padding: 5px; border-bottom: 1px solid #eee;"><t t-out="object.room_id.name"/></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold; padding: 5px; border-bottom: 1px solid #eee;">Start Time:</td>
+                        <td style="padding: 5px; border-bottom: 1px solid #eee;"><t t-out="object.start_time"/> UTC</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold; padding: 5px; border-bottom: 1px solid #eee;">End Time:</td>
+                        <td style="padding: 5px; border-bottom: 1px solid #eee;"><t t-out="object.end_time"/> UTC</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold; padding: 5px; border-bottom: 1px solid #eee;">Organizer:</td>
+                        <td style="padding: 5px; border-bottom: 1px solid #eee;"><t t-out="object.organizer_id.name"/></td>
+                    </tr>
+                </table>
+                <p style="margin-top: 20px;">Best regards,<br/>Meeting Room Booking System</p>
+            </div>
+        </field>
+    </record>
+
+    <!-- Meeting Cancelled Template -->
+    <record id="email_template_meeting_cancelled" model="mail.template">
+        <field name="name">Meeting Cancelled</field>
+        <field name="model_id" ref="meeting_room_booking.model_meeting_room_booking"/>
+        <field name="subject">Meeting Cancelled: {{ object.purpose }}</field>
+        <field name="body_html" type="html">
+            <div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.5;">
+                <p>Hello,</p>
+                <p>The following meeting has been <strong>cancelled</strong>:</p>
+                <table style="width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 20px;">
+                    <tr>
+                        <td style="width: 150px; font-weight: bold; padding: 5px; border-bottom: 1px solid #eee;">Subject/Purpose:</td>
+                        <td style="padding: 5px; border-bottom: 1px solid #eee;"><t t-out="object.purpose"/></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold; padding: 5px; border-bottom: 1px solid #eee;">Meeting Room:</td>
+                        <td style="padding: 5px; border-bottom: 1px solid #eee;"><t t-out="object.room_id.name"/></td>
+                    </tr>
+                </table>
+                <p style="margin-top: 20px;">Best regards,<br/>Meeting Room Booking System</p>
+            </div>
+        </field>
+    </record>
+</odoo>

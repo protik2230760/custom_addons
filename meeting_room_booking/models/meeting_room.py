@@ -21,6 +21,13 @@ class MeetingRoom(models.Model):
     name = fields.Char(string='Room Name', required=True)
     capacity = fields.Integer(string='Capacity', required=True)
     location = fields.Char(string='Location')
+    floor = fields.Char(string='Floor')
+    building = fields.Char(string='Building')
+    status = fields.Selection([
+        ('available', 'Available'),
+        ('maintenance', 'Under Maintenance'),
+        ('out_of_service', 'Out of Service')
+    ], string='Status', default='available', required=True)
     amenity_ids = fields.Many2many('meeting.room.amenity', string='Amenities')
     active = fields.Boolean(string='Active', default=True)
     notes = fields.Text(string='Notes')

@@ -26,6 +26,13 @@
               sequence="100"
               groups="group_meeting_room_manager"/>
 
+    <!-- Settings Menu under Configuration -->
+    <menuitem id="menu_meeting_room_booking_settings"
+              name="Settings"
+              parent="menu_meeting_room_booking_configuration"
+              action="action_meeting_room_booking_config_settings"
+              sequence="5"/>
+
     <!-- Amenities Menu under Configuration -->
     <menuitem id="menu_meeting_room_booking_amenities"
               name="Amenities"

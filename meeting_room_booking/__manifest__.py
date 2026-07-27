@@ -8,8 +8,10 @@
         'security/meeting_room_booking_security.xml',
         'security/ir.model.access.csv',
         'data/ir_sequence_data.xml',
+        'data/mail_template_data.xml',
         'views/meeting_room_booking_views.xml',
         'views/meeting_room_views.xml',
+        'views/res_config_settings_views.xml',
         'views/meeting_room_booking_menus.xml',
     ],
     'assets': {

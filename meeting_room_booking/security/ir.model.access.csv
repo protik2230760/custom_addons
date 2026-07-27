@@ -5,3 +5,5 @@ access_meeting_room_user,meeting.room.user,model_meeting_room,group_meeting_room
 access_meeting_room_manager,meeting.room.manager,model_meeting_room,group_meeting_room_manager,1,1,1,1
 access_meeting_room_booking_user,meeting.room.booking.user,model_meeting_room_booking,group_meeting_room_user,1,1,1,0
 access_meeting_room_booking_manager,meeting.room.booking.manager,model_meeting_room_booking,group_meeting_room_manager,1,1,1,1
+access_meeting_room_booking_participant_user,meeting.room.booking.participant.user,model_meeting_room_booking_participant,group_meeting_room_user,1,1,1,1
+access_meeting_room_booking_participant_manager,meeting.room.booking.participant.manager,model_meeting_room_booking_participant,group_meeting_room_manager,1,1,1,1

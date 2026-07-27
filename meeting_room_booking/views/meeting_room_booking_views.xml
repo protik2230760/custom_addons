@@ -38,6 +38,10 @@
                                 <widget name="web_ribbon" title="Rejected" bg_color="text-bg-danger" invisible="status != 'rejected'"/>
                                 <widget name="web_ribbon" title="Cancelled" bg_color="text-bg-secondary" invisible="status != 'cancelled'"/>
             
+                                <div class="alert alert-warning text-center o_form_header" role="status" invisible="not has_participant_conflicts">
+                                    <strong>Warning!</strong> One or more participants have conflict bookings at this time. If you want to confirm, check <strong>Ignore Participant Conflicts</strong>.
+                                </div>
+
                                 <div class="oe_title">
                                     <label for="purpose" string="Meeting Subject"/>
                                     <h1>
@@ -53,14 +57,27 @@
                                         <field name="room_id" options="{'no_create': True, 'no_open': False}" placeholder="Choose a meeting room..." domain="[('active', '=', True), ('capacity', '>=', attendees_count)]"/>
                                         <field name="attendees_count" string="Attendees Count"/>
                                         <field name="organizer_id" widget="many2one_avatar_user" readonly="status != 'draft'" string="Organizer"/>
+                                        <field name="has_participant_conflicts" invisible="1"/>
+                                        <field name="ignore_conflicts" invisible="not has_participant_conflicts" widget="boolean_toggle"/>
                                     </group>
                                     <group string="When">
                                         <field name="start_time" string="Start Time"/>
                                         <field name="end_time" string="End Time"/>
+                                        <field name="duration" widget="float_time" readonly="1"/>
                                     </group>
                                 </group>
             
                                 <notebook>
+                                    <page string="Participants" name="participants">
+                                        <field name="participant_ids" mode="list">
+                                            <list editable="bottom">
+                                                <field name="employee_id" options="{'no_create': True}"/>
+                                                <field name="job_title"/>
+                                                <field name="department_id"/>
+                                                <field name="work_email"/>
+                                            </list>
+                                        </field>
+                                    </page>
                                     <page string="Meeting Agenda &amp; Details" name="description">
                                         <field name="description" placeholder="Add meeting links (e.g. Google Meet, Zoom), agenda topics, or notes..." widget="html"/>
                                     </page>
@@ -175,4 +192,49 @@
             </p>
         </field>
     </record>
+
+    <!-- Booking Graph View -->
+    <record id="view_meeting_room_booking_graph" model="ir.ui.view">
+        <field name="name">meeting.room.booking.graph</field>
+        <field name="model">meeting.room.booking</field>
+        <field name="arch" type="xml">
+            <graph string="Bookings Analysis" type="bar" sample="1">
+                <field name="room_id" type="row"/>
+                <field name="duration" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Booking Pivot View -->
+    <record id="view_meeting_room_booking_pivot" model="ir.ui.view">
+        <field name="name">meeting.room.booking.pivot</field>
+        <field name="model">meeting.room.booking</field>
+        <field name="arch" type="xml">
+            <pivot string="Bookings Analysis" sample="1">
+                <field name="room_id" type="row"/>
+                <field name="booking_date" interval="month" type="col"/>
+                <field name="duration" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Reporting Action -->
+    <record id="action_meeting_room_booking_report" model="ir.actions.act_window">
+        <field name="name">Reporting</field>
+        <field name="res_model">meeting.room.booking</field>
+        <field name="view_mode">graph,pivot,list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No booking analysis data available.
+            </p>
+        </field>
+    </record>
+
+    <!-- Reporting Menu Item under Root -->
+    <menuitem id="menu_meeting_room_booking_reporting"
+              name="Reporting"
+              parent="menu_meeting_room_booking_root"
+              action="action_meeting_room_booking_report"
+              sequence="50"
+              groups="group_meeting_room_manager"/>
 </odoo>

@@ -83,6 +83,26 @@ class MeetingRoomBooking(models.Model):
         store=True,
         tracking=True
     )
+    duration = fields.Float(
+        string='Duration (Hours)',
+        compute='_compute_duration',
+        store=True,
+        readonly=True
+    )
+    ignore_conflicts = fields.Boolean(
+        string='Ignore Participant Conflicts',
+        default=False,
+        tracking=True
+    )
+    has_participant_conflicts = fields.Boolean(
+        string='Has Participant Conflicts',
+        compute='_compute_participant_conflicts'
+    )
+    participant_ids = fields.One2many(
+        'meeting.room.booking.participant',
+        'booking_id',
+        string='Participants'
+    )
 
     @api.depends('status')
     def _compute_color_index(self):
@@ -106,6 +126,32 @@ class MeetingRoomBooking(models.Model):
                 rec.department_id = employee.department_id.id if employee else False
             else:
                 rec.department_id = False
+
+    @api.depends('start_time', 'end_time')
+    def _compute_duration(self):
+        for rec in self:
+            if rec.start_time and rec.end_time:
+                diff = rec.end_time - rec.start_time
+                rec.duration = diff.total_seconds() / 3600.0
+            else:
+                rec.duration = 0.0
+
+    @api.depends('start_time', 'end_time', 'participant_ids.employee_id', 'status')
+    def _compute_participant_conflicts(self):
+        for rec in self:
+            if not rec.start_time or not rec.end_time or not rec.participant_ids or rec.status in ('cancelled', 'rejected'):
+                rec.has_participant_conflicts = False
+                continue
+            
+            employees = rec.participant_ids.mapped('employee_id')
+            overlap_bookings = self.search([
+                ('status', '=', 'confirmed'),
+                ('start_time', '<', rec.end_time),
+                ('end_time', '>', rec.start_time),
+                ('id', '!=', rec._origin.id if rec._origin else rec.id),
+                ('participant_ids.employee_id', 'in', employees.ids)
+            ])
+            rec.has_participant_conflicts = bool(overlap_bookings)
 
     @api.depends('room_id.name', 'purpose', 'organizer_id.name', 'status', 'start_time', 'end_time')
     def _compute_display_name(self):
@@ -276,9 +322,32 @@ class MeetingRoomBooking(models.Model):
         for rec in self:
             if rec.status != 'draft':
                 raise UserError(_("Only draft bookings can be confirmed."))
+            
+            # Check participant conflicts
+            if rec.has_participant_conflicts and not rec.ignore_conflicts:
+                conflicts = []
+                employees = rec.participant_ids.mapped('employee_id')
+                overlap_bookings = self.search([
+                    ('status', '=', 'confirmed'),
+                    ('start_time', '<', rec.end_time),
+                    ('end_time', '>', rec.start_time),
+                    ('id', '!=', rec.id),
+                    ('participant_ids.employee_id', 'in', employees.ids)
+                ])
+                for b in overlap_bookings:
+                    for p in b.participant_ids:
+                        if p.employee_id in employees:
+                            conflicts.append("%s is already busy in '%s'" % (p.employee_id.name, b.purpose or b.name))
+                
+                raise UserError(_(
+                    "Conflict detected: The following participants are already busy in another meeting:\n%s\n\n"
+                    "If you want to confirm anyway, please check 'Ignore Participant Conflicts' and click confirm again."
+                ) % "\n".join(set(conflicts)))
+
             rec.status = 'confirmed'
             # Send message to chatter
             rec.message_post(body=_("Booking approved and confirmed."))
+            rec._send_notification_email('meeting_room_booking.email_template_meeting_invitation')
 
     def action_reject(self):
         if not self.env.user.has_group('meeting_room_booking.group_meeting_room_manager'):
@@ -302,6 +371,7 @@ class MeetingRoomBooking(models.Model):
             
             rec.status = 'cancelled'
             rec.message_post(body=_("Booking cancelled."))
+            rec._send_notification_email('meeting_room_booking.email_template_meeting_cancelled')
 
     def action_draft(self):
         if not self.env.user.has_group('meeting_room_booking.group_meeting_room_manager'):
@@ -322,3 +392,52 @@ class MeetingRoomBooking(models.Model):
                 raise UserError(_("Only confirmed bookings can be marked as Done."))
             rec.status = 'done'
             rec.message_post(body=_("Booking marked as Done."))
+
+    def write(self, vals):
+        time_changed = False
+        if 'start_time' in vals or 'end_time' in vals or 'room_id' in vals:
+            time_changed = True
+            
+        res = super().write(vals)
+        
+        if time_changed:
+            for rec in self:
+                if rec.status == 'confirmed':
+                    rec._send_notification_email('meeting_room_booking.email_template_meeting_rescheduled')
+        return res
+
+    def _send_notification_email(self, template_xml_id):
+        enabled = self.env['ir.config_parameter'].sudo().get_param('meeting_room_booking.email_notifications', 'False')
+        if enabled != 'True':
+            return
+            
+        template = self.env.ref(template_xml_id, raise_if_not_found=False)
+        if not template:
+            return
+            
+        for rec in self:
+            emails = []
+            if rec.organizer_id and rec.organizer_id.email:
+                emails.append(rec.organizer_id.email)
+            for p in rec.participant_ids:
+                if p.work_email:
+                    emails.append(p.work_email)
+            
+            emails = list(set(emails))
+            if not emails:
+                continue
+                
+            email_values = {
+                'email_to': ",".join(emails),
+            }
+            template.send_mail(rec.id, force_send=True, email_values=email_values)
+
+class MeetingRoomBookingParticipant(models.Model):
+    _name = 'meeting.room.booking.participant'
+    _description = 'Meeting Participant'
+
+    booking_id = fields.Many2one('meeting.room.booking', string='Booking', ondelete='cascade')
+    employee_id = fields.Many2one('hr.employee', string='Employee Name', required=True)
+    job_title = fields.Char(related='employee_id.job_title', string='Job Position', readonly=True)
+    department_id = fields.Many2one('hr.department', related='employee_id.department_id', string='Department', readonly=True)
+    work_email = fields.Char(related='employee_id.work_email', string='Work Email', readonly=True)
