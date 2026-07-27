@@ -3,6 +3,7 @@
     <template id="report_employee_id_card_layout">
         <t t-call="web.html_container">
             <t t-set="actual_print_side" t-value="print_side or (request and request.params and request.params.get('print_side'))"/>
+            <t t-set="color_mapping" t-value="{0: '#64748b', 1: '#ef4444', 2: '#f97316', 3: '#f59e0b', 4: '#06b6d4', 5: '#a855f7', 6: '#ec4899', 7: '#14b8a6', 8: '#3b82f6', 9: '#6366f1', 10: '#22c55e', 11: '#10b981'}"/>
             <!-- Modern Premium Print Options Modal Styling -->
             <style type="text/css">
                 #print-options-modal {
@@ -457,7 +458,7 @@
                         <div style="position: absolute; top: 31mm; left: 0; width: 35mm; text-align: center; padding: 0 1.2mm; box-sizing: border-box;">
                             <div style="font-size: 7.6px; font-weight: bold; color: #002d62; line-height: 1.15;"><span t-field="o.name"/></div>
                             <div style="font-size: 5.8px; color: #475569; margin-top: 0.3mm; font-weight: 500; line-height: 1.1;"><span t-field="o.job_title"/></div>
-                            <div style="font-size: 5px; color: #64748b; margin-top: 0.2mm; line-height: 1.1;"><span t-field="o.department_id.name"/></div>
+                            <div t-att-style="'font-size: 5px; color: ' + color_mapping.get(o.department_id.color or 0, '#64748b') + '; margin-top: 0.2mm; line-height: 1.1; font-weight: bold;'"><span t-field="o.department_id.name"/></div>
                             <div style="font-size: 6.4px; font-weight: bold; color: #002d62; margin-top: 0.8mm; line-height: 1.1;">
                                 ID No: <span t-field="o.identification_id"/>
                             </div>
