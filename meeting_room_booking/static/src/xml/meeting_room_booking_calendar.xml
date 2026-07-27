@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="meeting_room_booking.CalendarController" t-inherit="web.CalendarController" t-inherit-mode="primary">
+        <xpath expr="//div[hasclass('o_calendar_container')]/div[hasclass('o_calendar_header')]" position="before">
+            <!-- Modern and Clean Dashboard Summary Header -->
+            <div class="o_calendar_dashboard d-flex gap-3 px-3 py-2 border-bottom bg-light flex-wrap align-items-center justify-content-between" style="background-color: #f8fafc !important;">
+                <div class="d-flex gap-3 align-items-center flex-wrap">
+                    <!-- Total Meetings Today -->
+                    <div class="dashboard_card d-flex align-items-center bg-white border rounded px-3 py-2 shadow-sm" style="min-width: 150px; border-color: #e2e8f0 !important;">
+                        <div class="text-primary me-3" style="font-size: 20px;"><i class="fa fa-calendar"/></div>
+                        <div>
+                            <div class="text-muted small fw-bold" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px;">Today's Meetings</div>
+                            <div class="fw-bold text-dark" style="font-size: 16px;"><t t-esc="dashboardState.data.total_meetings_today or 0"/></div>
+                        </div>
+                    </div>
+                    <!-- Active Meetings -->
+                    <div class="dashboard_card d-flex align-items-center bg-white border rounded px-3 py-2 shadow-sm" style="min-width: 150px; border-color: #e2e8f0 !important;">
+                        <div class="text-success me-3" style="font-size: 20px;"><i class="fa fa-play-circle"/></div>
+                        <div>
+                            <div class="text-muted small fw-bold" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px;">Active Meetings</div>
+                            <div class="fw-bold text-dark" style="font-size: 16px;"><t t-esc="dashboardState.data.active_meetings or 0"/></div>
+                        </div>
+                    </div>
+                    <!-- Upcoming Meetings -->
+                    <div class="dashboard_card d-flex align-items-center bg-white border rounded px-3 py-2 shadow-sm" style="min-width: 150px; border-color: #e2e8f0 !important;">
+                        <div class="text-warning me-3" style="font-size: 20px;"><i class="fa fa-clock-o"/></div>
+                        <div>
+                            <div class="text-muted small fw-bold" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px;">Upcoming</div>
+                            <div class="fw-bold text-dark" style="font-size: 16px;"><t t-esc="dashboardState.data.upcoming_meetings or 0"/></div>
+                        </div>
+                    </div>
+                    <!-- Available Rooms -->
+                    <div class="dashboard_card d-flex align-items-center bg-white border rounded px-3 py-2 shadow-sm" style="min-width: 150px; border-color: #e2e8f0 !important;">
+                        <div class="text-info me-3" style="font-size: 20px;"><i class="fa fa-check-square-o"/></div>
+                        <div>
+                            <div class="text-muted small fw-bold" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px;">Available Rooms</div>
+                            <div class="fw-bold text-dark" style="font-size: 16px;"><t t-esc="dashboardState.data.available_rooms or 0"/></div>
+                        </div>
+                    </div>
+                    <!-- Occupied Rooms -->
+                    <div class="dashboard_card d-flex align-items-center bg-white border rounded px-3 py-2 shadow-sm" style="min-width: 150px; border-color: #e2e8f0 !important;">
+                        <div class="text-danger me-3" style="font-size: 20px;"><i class="fa fa-ban"/></div>
+                        <div>
+                            <div class="text-muted small fw-bold" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px;">Occupied Rooms</div>
+                            <div class="fw-bold text-dark" style="font-size: 16px;"><t t-esc="dashboardState.data.occupied_rooms or 0"/></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </t>
+</templates>

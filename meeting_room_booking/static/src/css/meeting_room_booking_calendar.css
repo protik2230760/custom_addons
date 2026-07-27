@@ -1,0 +1,31 @@
+/* Confirmed -> Green */
+.o_calendar_renderer .fc-event.o_calendar_color_10,
+.o_calendar_renderer .o_calendar_color_10 {
+    background-color: #22c55e !important;
+    border-color: #22c55e !important;
+    color: #ffffff !important;
+}
+
+/* Draft -> Yellow */
+.o_calendar_renderer .fc-event.o_calendar_color_3,
+.o_calendar_renderer .o_calendar_color_3 {
+    background-color: #eab308 !important;
+    border-color: #eab308 !important;
+    color: #ffffff !important;
+}
+
+/* Completed (Done) -> Blue */
+.o_calendar_renderer .fc-event.o_calendar_color_8,
+.o_calendar_renderer .o_calendar_color_8 {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    color: #ffffff !important;
+}
+
+/* Cancelled -> Red */
+.o_calendar_renderer .fc-event.o_calendar_color_1,
+.o_calendar_renderer .o_calendar_color_1 {
+    background-color: #ef4444 !important;
+    border-color: #ef4444 !important;
+    color: #ffffff !important;
+}

@@ -71,6 +71,113 @@ class MeetingRoomBooking(models.Model):
         default=1,
         tracking=True
     )
+    color_index = fields.Integer(
+        string='Color Index',
+        compute='_compute_color_index',
+        store=True
+    )
+    department_id = fields.Many2one(
+        'hr.department',
+        string='Department',
+        compute='_compute_department_id',
+        store=True,
+        tracking=True
+    )
+
+    @api.depends('status')
+    def _compute_color_index(self):
+        for rec in self:
+            if rec.status == 'confirmed':
+                rec.color_index = 10  # Green
+            elif rec.status == 'draft':
+                rec.color_index = 3   # Yellow
+            elif rec.status == 'done':
+                rec.color_index = 8   # Blue
+            elif rec.status == 'cancelled':
+                rec.color_index = 1   # Red
+            else:
+                rec.color_index = 0   # Gray
+
+    @api.depends('organizer_id')
+    def _compute_department_id(self):
+        for rec in self:
+            if rec.organizer_id:
+                employee = self.env['hr.employee'].search([('user_id', '=', rec.organizer_id.id)], limit=1)
+                rec.department_id = employee.department_id.id if employee else False
+            else:
+                rec.department_id = False
+
+    @api.depends('room_id.name', 'purpose', 'organizer_id.name', 'status', 'start_time', 'end_time')
+    def _compute_display_name(self):
+        for rec in self:
+            time_str = ""
+            if rec.start_time and rec.end_time:
+                user_tz = self.env.user.tz or 'UTC'
+                import pytz
+                try:
+                    utc_start = pytz.utc.localize(rec.start_time)
+                    utc_end = pytz.utc.localize(rec.end_time)
+                    local_tz = pytz.timezone(user_tz)
+                    local_start = utc_start.astimezone(local_tz)
+                    local_end = utc_end.astimezone(local_tz)
+                    time_str = "%s – %s" % (local_start.strftime('%I:%M %p'), local_end.strftime('%I:%M %p'))
+                except Exception:
+                    time_str = "%s – %s" % (rec.start_time.strftime('%H:%M'), rec.end_time.strftime('%H:%M'))
+            
+            room = rec.room_id.name or "No Room"
+            purpose = rec.purpose or "No Subject"
+            organizer = rec.organizer_id.name or "N/A"
+            status_val = dict(self._fields['status'].selection).get(rec.status, '')
+
+            rec.display_name = "%s\n%s\n%s\nOrganizer: %s\n%s" % (
+                room,
+                time_str,
+                purpose,
+                organizer,
+                status_val
+            )
+
+    @api.model
+    def get_dashboard_summary(self):
+        now = fields.Datetime.now()
+        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        today_end = now.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+        total_meetings_today = self.search_count([
+            ('start_time', '<=', today_end),
+            ('end_time', '>=', today_start),
+            ('status', 'not in', ('cancelled', 'rejected'))
+        ])
+
+        active_meetings = self.search_count([
+            ('start_time', '<=', now),
+            ('end_time', '>=', now),
+            ('status', '=', 'confirmed')
+        ])
+
+        upcoming_meetings = self.search_count([
+            ('start_time', '>', now),
+            ('status', '=', 'confirmed')
+        ])
+
+        total_rooms = self.env['meeting.room'].search_count([('active', '=', True)])
+        
+        # Rooms currently occupied by confirmed bookings
+        occupied_rooms_ids = self.env['meeting.room.booking'].search([
+            ('start_time', '<=', now),
+            ('end_time', '>=', now),
+            ('status', '=', 'confirmed')
+        ]).mapped('room_id').ids
+        occupied_rooms = len(set(occupied_rooms_ids))
+        available_rooms = max(0, total_rooms - occupied_rooms)
+
+        return {
+            'total_meetings_today': total_meetings_today,
+            'active_meetings': active_meetings,
+            'upcoming_meetings': upcoming_meetings,
+            'available_rooms': available_rooms,
+            'occupied_rooms': occupied_rooms,
+        }
 
     @api.depends('start_time')
     def _compute_booking_date(self):
@@ -105,18 +212,7 @@ class MeetingRoomBooking(models.Model):
                 
             overlap_bookings = self.env['meeting.room.booking'].search(domain)
             if overlap_bookings:
-                # Convert times to user's timezone for clear display
-                overlap_details = []
-                for b in overlap_bookings:
-                    b_start = fields.Datetime.context_timestamp(self, b.start_time)
-                    b_end = fields.Datetime.context_timestamp(self, b.end_time)
-                    overlap_details.append(
-                        f"{b.name} ({b_start.strftime('%Y-%m-%d %H:%M')} - {b_end.strftime('%H:%M')})"
-                    )
-                raise ValidationError(_(
-                    "The room '%s' is already booked or pending approval during this time slot.\n"
-                    "Overlapping Bookings: %s"
-                ) % (rec.room_id.name, ", ".join(overlap_details)))
+                raise ValidationError(_("This meeting room is already booked during the selected time. Please choose another time slot or room."))
 
     @api.constrains('room_id', 'attendees_count')
     def _check_room_capacity(self):

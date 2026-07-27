@@ -76,7 +76,7 @@
         <field name="name">meeting.room.booking.calendar</field>
         <field name="model">meeting.room.booking</field>
         <field name="arch" type="xml">
-            <calendar string="Bookings" date_start="start_time" date_stop="end_time" color="status" quick_create="0" mode="week">
+            <calendar string="Bookings" date_start="start_time" date_stop="end_time" color="color_index" quick_create="0" mode="week" js_class="meeting_room_booking_calendar">
                             <field name="room_id"/>
                             <field name="organizer_id" avatar_field="avatar_128"/>
                             <field name="purpose"/>
@@ -128,29 +128,34 @@
         <field name="model">meeting.room.booking</field>
         <field name="arch" type="xml">
             <search string="Search Bookings">
-                            <field name="name"/>
-                            <field name="room_id"/>
-                            <field name="organizer_id"/>
-                            <field name="purpose"/>
-                            
-                            <!-- Quick Filters -->
-                            <filter string="My Bookings" name="my_bookings" domain="[('organizer_id', '=', uid)]"/>
-                            <separator/>
-                            <filter string="Today" name="today" domain="[('booking_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
-                            <filter string="This Week" name="this_week" domain="[                     ('booking_date', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d')),                     ('booking_date', '&lt;=', (context_today() + datetime.timedelta(days=6 - context_today().weekday())).strftime('%Y-%m-%d'))                 ]"/>
-                            <separator/>
-                            <filter string="Draft / Pending" name="status_draft" domain="[('status', '=', 'draft')]"/>
-                            <filter string="Confirmed" name="status_confirmed" domain="[('status', '=', 'confirmed')]"/>
-                            <filter string="Done" name="status_done" domain="[('status', '=', 'done')]"/>
-                            
-                            <!-- Group By Options -->
-                            <group name="group_by">
-                                <filter string="Meeting Room" name="group_by_room" domain="[]" context="{'group_by': 'room_id'}"/>
-                                <filter string="Organizer" name="group_by_organizer" domain="[]" context="{'group_by': 'organizer_id'}"/>
-                                <filter string="Status" name="group_by_status" domain="[]" context="{'group_by': 'status'}"/>
-                                <filter string="Booking Date" name="group_by_date" domain="[]" context="{'group_by': 'booking_date'}"/>
-                            </group>
-                        </search>
+                <!-- Searchable Fields -->
+                <field name="name" string="Booking Reference"/>
+                <field name="room_id" string="Room Name"/>
+                <field name="organizer_id" string="Organizer"/>
+                <field name="purpose" string="Purpose"/>
+                <field name="department_id" string="Department"/>
+
+                <!-- Quick Filters -->
+                <filter string="My Bookings" name="my_bookings" domain="[('organizer_id', '=', uid)]"/>
+                <separator/>
+                <!-- Date Filters -->
+                <filter string="Booking Date" name="filter_booking_date" date="booking_date"/>
+                <separator/>
+                <!-- Status Filters -->
+                <filter string="Draft / Pending" name="status_draft" domain="[('status', '=', 'draft')]"/>
+                <filter string="Confirmed" name="status_confirmed" domain="[('status', '=', 'confirmed')]"/>
+                <filter string="Completed" name="status_done" domain="[('status', '=', 'done')]"/>
+                <filter string="Cancelled" name="status_cancelled" domain="[('status', '=', 'cancelled')]"/>
+                
+                <!-- Group By Options -->
+                <group name="group_by">
+                    <filter string="Meeting Room" name="group_by_room" domain="[]" context="{'group_by': 'room_id'}"/>
+                    <filter string="Organizer" name="group_by_organizer" domain="[]" context="{'group_by': 'organizer_id'}"/>
+                    <filter string="Status" name="group_by_status" domain="[]" context="{'group_by': 'status'}"/>
+                    <filter string="Department" name="group_by_department" domain="[]" context="{'group_by': 'department_id'}"/>
+                    <filter string="Booking Date" name="group_by_date" domain="[]" context="{'group_by': 'booking_date'}"/>
+                </group>
+            </search>
         </field>
     </record>
 
@@ -158,7 +163,7 @@
     <record id="action_meeting_room_booking" model="ir.actions.act_window">
         <field name="name">Bookings</field>
         <field name="res_model">meeting.room.booking</field>
-        <field name="view_mode">list,calendar,kanban,form</field>
+        <field name="view_mode">calendar,list,kanban,form</field>
         <field name="search_view_id" ref="view_meeting_room_booking_search"/>
         <field name="context">{'search_default_my_bookings': 0}</field>
         <field name="help" type="html">

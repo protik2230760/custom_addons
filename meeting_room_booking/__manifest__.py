@@ -3,7 +3,7 @@
     'version': '1.0',
     'category': 'Extra Tools',
     'summary': 'Simple booking system for meeting rooms.',
-    'depends': ['mail'],
+    'depends': ['mail', 'hr'],
     'data': [
         'security/meeting_room_booking_security.xml',
         'security/ir.model.access.csv',
@@ -12,6 +12,13 @@
         'views/meeting_room_views.xml',
         'views/meeting_room_booking_menus.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'meeting_room_booking/static/src/css/meeting_room_booking_calendar.css',
+            'meeting_room_booking/static/src/js/meeting_room_booking_calendar.js',
+            'meeting_room_booking/static/src/xml/meeting_room_booking_calendar.xml',
+        ],
+    },
     'installable': True,
     'application': True,
     'license': 'LGPL-3',
