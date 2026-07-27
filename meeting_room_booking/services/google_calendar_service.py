@@ -18,7 +18,7 @@ def get_google_access_token(env):
     """
     params = env['ir.config_parameter'].sudo()
     
-    sync_enabled = params.get_param('meeting_room_booking.google_sync_enabled')
+    sync_enabled = params.get_param('meeting_room_booking.google_sync_enabled') == 'True'
     if not sync_enabled:
         return False
         
