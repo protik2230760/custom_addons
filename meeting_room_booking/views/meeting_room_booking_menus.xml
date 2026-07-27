@@ -4,6 +4,7 @@
     <menuitem id="menu_meeting_room_booking_root"
               name="Meeting Rooms"
               web_icon="meeting_room_booking,static/description/icon.png"
+              action="action_meeting_room_booking_calendar"
               sequence="10"/>
 
     <!-- Sub-menus under Root -->

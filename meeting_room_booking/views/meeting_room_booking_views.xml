@@ -167,8 +167,25 @@
         </field>
     </record>
 
-    <!-- Booking Action -->
+    <!-- Booking Action (Default List View) -->
     <record id="action_meeting_room_booking" model="ir.actions.act_window">
+        <field name="name">Bookings</field>
+        <field name="res_model">meeting.room.booking</field>
+        <field name="view_mode">list,calendar,kanban,form</field>
+        <field name="search_view_id" ref="view_meeting_room_booking_search"/>
+        <field name="context">{'search_default_my_bookings': 0}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Book a meeting room!
+            </p>
+            <p>
+                Select a meeting room, date, and start/end time. The system will automatically prevent overlapping bookings.
+            </p>
+        </field>
+    </record>
+
+    <!-- Booking Action (Default Calendar View for Main Landing Page) -->
+    <record id="action_meeting_room_booking_calendar" model="ir.actions.act_window">
         <field name="name">Bookings</field>
         <field name="res_model">meeting.room.booking</field>
         <field name="view_mode">calendar,list,kanban,form</field>
