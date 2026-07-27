@@ -324,6 +324,15 @@ class MeetingRoomBooking(models.Model):
                 vals['name'] = self.env['ir.sequence'].next_by_code('meeting.room.booking') or _('New')
         return super().create(vals_list)
 
+    def action_open_kiosk(self):
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url', 'http://localhost:8069')
+        url = f"{base_url.rstrip('/')}/meeting_room_booking/kiosk"
+        return {
+            'type': 'ir.actions.act_url',
+            'url': url,
+            'target': 'new',
+        }
+
     # State Actions
     def action_confirm(self):
         if not self.env.user.has_group('meeting_room_booking.group_meeting_room_manager'):

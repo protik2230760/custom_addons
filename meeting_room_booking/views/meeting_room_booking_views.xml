@@ -30,6 +30,7 @@
                                 <button name="action_done" string="Mark as Done" type="object" class="oe_highlight" invisible="status != 'confirmed'"/>
                                 <button name="action_cancel" string="Cancel Booking" type="object" invisible="status not in ('draft', 'confirmed')"/>
                                 <button name="action_draft" string="Reset to Draft" type="object" invisible="status not in ('cancelled', 'rejected')" groups="meeting_room_booking.group_meeting_room_manager"/>
+                                <button name="action_open_kiosk" string="Kiosk Mode" type="object" class="btn-secondary" icon="fa-desktop"/>
                                 <field name="status" widget="statusbar" statusbar_visible="draft,confirmed,done"/>
                             </header>
                             <sheet>
