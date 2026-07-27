@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="kiosk_mode_dashboard" name="Kiosk Mode Dashboard">
+        &lt;!DOCTYPE html&gt;
+        <html lang="en">
+            <head>
+                <meta charset="utf-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+                <title>Meeting Room Kiosk Dashboard</title>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+                <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+                <style>
+                    body {
+                        background-color: #0f172a;
+                        color: #e2e8f0;
+                        font-family: 'Outfit', sans-serif;
+                        margin: 0;
+                        padding: 0;
+                        min-height: 100vh;
+                    }
+                    .kiosk-container {
+                        max-width: 1400px;
+                        margin: 0 auto;
+                        padding: 24px;
+                        box-sizing: border-box;
+                    }
+                    /* Glassmorphism background effect */
+                    .kiosk-header, .summary-card, .room-card, .upcoming-sidebar, .upcoming-item {
+                        background: rgba(30, 41, 59, 0.7);
+                        border: 1px solid rgba(255, 255, 255, 0.08);
+                        backdrop-filter: blur(16px);
+                        border-radius: 16px;
+                        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+                    }
+                    .kiosk-header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding: 20px 30px;
+                        margin-bottom: 24px;
+                    }
+                    .header-logo {
+                        display: flex;
+                        align-items: center;
+                        gap: 15px;
+                    }
+                    .logo-icon {
+                        font-size: 28px;
+                        color: #6366f1;
+                        text-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+                    }
+                    .header-title {
+                        font-size: 24px;
+                        font-weight: 700;
+                        letter-spacing: -0.5px;
+                        background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                    }
+                    .live-clock {
+                        text-align: right;
+                    }
+                    #clock-time {
+                        font-size: 26px;
+                        font-weight: 800;
+                        color: #818cf8;
+                        text-shadow: 0 0 10px rgba(129, 140, 248, 0.3);
+                    }
+                    #clock-date {
+                        font-size: 14px;
+                        color: #94a3b8;
+                        margin-top: 4px;
+                    }
+                    .summary-cards {
+                        display: grid;
+                        grid-template-columns: repeat(3, 1fr);
+                        gap: 20px;
+                        margin-bottom: 28px;
+                    }
+                    .summary-card {
+                        padding: 20px 24px;
+                        text-align: center;
+                        position: relative;
+                        overflow: hidden;
+                        transition: transform 0.2s;
+                    }
+                    .summary-card:hover {
+                        transform: translateY(-2px);
+                    }
+                    .summary-value {
+                        font-size: 36px;
+                        font-weight: 800;
+                    }
+                    .summary-label {
+                        font-size: 14px;
+                        color: #94a3b8;
+                        margin-top: 6px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 8px;
+                    }
+                    .dot {
+                        width: 8px;
+                        height: 8px;
+                        border-radius: 50%;
+                        display: inline-block;
+                    }
+                    .dot.green {
+                        background-color: #22c55e;
+                        box-shadow: 0 0 8px #22c55e;
+                    }
+                    .dot.red {
+                        background-color: #ef4444;
+                        box-shadow: 0 0 8px #ef4444;
+                    }
+                    .summary-card.available .summary-value {
+                        color: #4ade80;
+                        text-shadow: 0 0 10px rgba(74, 222, 128, 0.2);
+                    }
+                    .summary-card.occupied .summary-value {
+                        color: #f87171;
+                        text-shadow: 0 0 10px rgba(248, 113, 113, 0.2);
+                    }
+                    .kiosk-main {
+                        display: grid;
+                        grid-template-columns: 2.2fr 1fr;
+                        gap: 24px;
+                    }
+                    .section-heading {
+                        font-size: 18px;
+                        font-weight: 700;
+                        color: #f1f5f9;
+                        margin: 0 0 16px 0;
+                        display: flex;
+                        align-items: center;
+                    }
+                    .rooms-grid {
+                        display: grid;
+                        grid-template-columns: repeat(2, 1fr);
+                        gap: 20px;
+                    }
+                    .room-card {
+                        padding: 20px 24px;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-between;
+                        transition: border-color 0.3s, box-shadow 0.3s;
+                    }
+                    .room-card-header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: flex-start;
+                        margin-bottom: 12px;
+                    }
+                    .room-name {
+                        font-size: 20px;
+                        font-weight: 700;
+                        margin: 0;
+                        color: #ffffff;
+                    }
+                    .room-location {
+                        font-size: 12px;
+                        color: #94a3b8;
+                        margin-top: 2px;
+                        display: block;
+                    }
+                    .status-badge {
+                        padding: 4px 10px;
+                        border-radius: 9999px;
+                        font-size: 11px;
+                        font-weight: 700;
+                        display: flex;
+                        align-items: center;
+                        gap: 6px;
+                    }
+                    .status-available {
+                        border-left: 5px solid #22c55e;
+                    }
+                    .status-available .status-badge {
+                        background-color: rgba(34, 197, 94, 0.15);
+                        color: #4ade80;
+                        border: 1px solid rgba(74, 222, 128, 0.2);
+                    }
+                    .status-occupied {
+                        border-left: 5px solid #ef4444;
+                    }
+                    .status-occupied .status-badge {
+                        background-color: rgba(239, 68, 68, 0.15);
+                        color: #f87171;
+                        border: 1px solid rgba(248, 113, 113, 0.2);
+                    }
+                    .room-capacity {
+                        font-size: 13px;
+                        color: #cbd5e1;
+                        margin-bottom: 12px;
+                    }
+                    .amenities-container {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 6px;
+                        margin-bottom: 16px;
+                    }
+                    .amenity-pill {
+                        background-color: rgba(148, 163, 184, 0.1);
+                        color: #94a3b8;
+                        padding: 2px 8px;
+                        border-radius: 6px;
+                        font-size: 11px;
+                        border: 1px solid rgba(148, 163, 184, 0.15);
+                    }
+                    .room-card-body {
+                        border-top: 1px solid rgba(255, 255, 255, 0.05);
+                        padding-top: 16px;
+                    }
+                    .meeting-details-box {
+                        background-color: rgba(239, 68, 68, 0.05);
+                        border: 1px solid rgba(239, 68, 68, 0.15);
+                        padding: 12px 14px;
+                        border-radius: 8px;
+                    }
+                    .meeting-purpose {
+                        font-size: 14px;
+                        font-weight: 600;
+                        color: #f87171;
+                        margin-bottom: 6px;
+                    }
+                    .meeting-meta {
+                        font-size: 12px;
+                        color: #cbd5e1;
+                        display: flex;
+                        gap: 15px;
+                    }
+                    .meeting-meta i {
+                        color: #ef4444;
+                    }
+                    .meeting-next-box {
+                        font-size: 13px;
+                        color: #94a3b8;
+                        background-color: rgba(255, 255, 255, 0.02);
+                        padding: 8px 12px;
+                        border-radius: 8px;
+                        display: flex;
+                        flex-direction: column;
+                        gap: 2px;
+                    }
+                    .next-label {
+                        font-size: 10px;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                    }
+                    .next-time {
+                        font-size: 14px;
+                        font-weight: 700;
+                        color: #818cf8;
+                    }
+                    .next-title {
+                        font-size: 12px;
+                        color: #cbd5e1;
+                    }
+                    .meeting-free-box {
+                        font-size: 13px;
+                        color: #4ade80;
+                        display: flex;
+                        align-items: center;
+                    }
+                    .upcoming-sidebar {
+                        padding: 24px;
+                        min-height: 500px;
+                    }
+                    .upcoming-list {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 12px;
+                    }
+                    .upcoming-item {
+                        padding: 14px 16px;
+                        display: flex;
+                        gap: 15px;
+                        transition: transform 0.2s;
+                    }
+                    .upcoming-item:hover {
+                        transform: translateX(2px);
+                    }
+                    .upcoming-time-col {
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        border-right: 2px solid rgba(99, 102, 241, 0.2);
+                        padding-right: 12px;
+                        min-width: 75px;
+                    }
+                    .upcoming-start {
+                        font-size: 13px;
+                        font-weight: 700;
+                        color: #818cf8;
+                    }
+                    .upcoming-end {
+                        font-size: 10px;
+                        color: #94a3b8;
+                        margin-top: 2px;
+                    }
+                    .upcoming-details-col {
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                    }
+                    .upcoming-title {
+                        font-size: 14px;
+                        font-weight: 600;
+                        color: #f1f5f9;
+                        margin: 0 0 4px 0;
+                    }
+                    .upcoming-meta {
+                        font-size: 11px;
+                        color: #94a3b8;
+                        display: flex;
+                        gap: 12px;
+                    }
+                    .no-upcoming {
+                        text-align: center;
+                        padding: 40px 0;
+                        color: #64748b;
+                    }
+                    .no-upcoming i {
+                        font-size: 32px;
+                        margin-bottom: 12px;
+                    }
+                    .no-upcoming p {
+                        font-size: 13px;
+                        margin: 0;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="kiosk-container">
+                    <!-- Header -->
+                    <header class="kiosk-header">
+                        <div class="header-logo">
+                            <i class="fa-solid fa-hotel logo-icon"></i>
+                            <span class="header-title">Meeting Room Status</span>
+                        </div>
+                        <div class="live-clock">
+                            <div id="clock-time">00:00:00 AM</div>
+                            <div id="clock-date">Monday, 27 July 2026</div>
+                        </div>
+                    </header>
+
+                    <!-- Summary Row -->
+                    <section class="summary-cards">
+                        <div class="summary-card total">
+                            <div class="summary-value" id="summary-total">0</div>
+                            <div class="summary-label">Total Rooms</div>
+                        </div>
+                        <div class="summary-card available">
+                            <div class="summary-value" id="summary-available">0</div>
+                            <div class="summary-label"><span class="dot green"></span> Available Rooms</div>
+                        </div>
+                        <div class="summary-card occupied">
+                            <div class="summary-value" id="summary-occupied">0</div>
+                            <div class="summary-label"><span class="dot red"></span> Occupied Rooms</div>
+                        </div>
+                    </section>
+
+                    <!-- Main Section Grid -->
+                    <main class="kiosk-main">
+                        <div class="rooms-grid-container">
+                            <h2 class="section-heading"><i class="fa-solid fa-door-open me-2 text-indigo-400"></i> Meeting Rooms Status</h2>
+                            <div class="rooms-grid" id="rooms-grid">
+                                <!-- Cards populated by JS -->
+                            </div>
+                        </div>
+                        <aside class="upcoming-sidebar">
+                            <h2 class="section-heading"><i class="fa-regular fa-calendar-check me-2 text-indigo-400"></i> Today's Schedule</h2>
+                            <div class="upcoming-list" id="upcoming-list">
+                                <!-- Populated by JS -->
+                            </div>
+                        </aside>
+                    </main>
+                </div>
+
+                <script>
+                    // Clock logic
+                    function updateClock() {
+                        const now = new Date();
+                        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+                        const dateStr = now.toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                        document.getElementById('clock-time').textContent = timeStr;
+                        document.getElementById('clock-date').textContent = dateStr;
+                    }
+                    setInterval(updateClock, 1000);
+                    updateClock();
+
+                    // Live Data Fetch logic
+                    async function fetchKioskData() {
+                        try {
+                            const response = await fetch('/meeting_room_booking/kiosk/data', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: {} }),
+                            });
+                            const resJson = await response.json();
+                            const data = resJson.result;
+                            if (data) {
+                                renderDashboard(data);
+                            }
+                        } catch (err) {
+                            console.error("Failed to load kiosk data:", err);
+                        }
+                    }
+
+                    function renderDashboard(data) {
+                        // Update Summary
+                        document.getElementById('summary-total').textContent = data.summary.total;
+                        document.getElementById('summary-available').textContent = data.summary.available;
+                        document.getElementById('summary-occupied').textContent = data.summary.occupied;
+
+                        // Render Rooms Grid
+                        const grid = document.getElementById('rooms-grid');
+                        grid.innerHTML = '';
+                        data.rooms.forEach(room => {
+                            const isOccupied = room.status === 'occupied';
+                            const statusClass = isOccupied ? 'status-occupied' : 'status-available';
+                            const statusText = isOccupied ? 'OCCUPIED' : 'AVAILABLE';
+                            const statusIcon = isOccupied ? 'fa-circle-xmark' : 'fa-circle-check';
+
+                            let detailsHtml = '';
+                            if (isOccupied) {
+                                detailsHtml = `
+                                    <div class="meeting-details-box">
+                                        <div class="meeting-purpose">${room.current_meeting.purpose}</div>
+                                        <div class="meeting-meta">
+                                            <span><i class="fa-regular fa-user"></i> ${room.current_meeting.organizer}</span>
+                                            <span><i class="fa-regular fa-clock"></i> Until ${room.current_meeting.end_time}</span>
+                                        </div>
+                                    </div>
+                                `;
+                            } else if (room.next_meeting &amp;&amp; room.next_meeting.purpose) {
+                                detailsHtml = `
+                                    <div class="meeting-next-box">
+                                        <span class="next-label">Next meeting:</span>
+                                        <span class="next-time">${room.next_meeting.start_time}</span>
+                                        <span class="next-title">${room.next_meeting.purpose} (${room.next_meeting.organizer})</span>
+                                    </div>
+                                `;
+                            } else {
+                                detailsHtml = `
+                                    <div class="meeting-free-box">
+                                        <i class="fa-solid fa-champagne-glasses me-2"></i> Free all day today
+                                    </div>
+                                `;
+                            }
+
+                            // Amenities Pills
+                            const amenitiesHtml = room.amenities.map(a => `<span class="amenity-pill">${a}</span>`).join('');
+
+                            const card = document.createElement('div');
+                            card.className = `room-card ${statusClass}`;
+                            card.innerHTML = `
+                                <div class="room-card-header">
+                                    <div class="room-info">
+                                        <h3 class="room-name">${room.name}</h3>
+                                        <span class="room-location">${room.building ? room.building + ', ' : ''}Floor ${room.floor || 'N/A'}</span>
+                                    </div>
+                                    <span class="status-badge"><i class="fa-solid ${statusIcon}"></i> ${statusText}</span>
+                                </div>
+                                <div class="room-capacity">
+                                    <i class="fa-solid fa-users"></i> Capacity: <strong>${room.capacity}</strong>
+                                </div>
+                                <div class="amenities-container">
+                                    ${amenitiesHtml}
+                                </div>
+                                <div class="room-card-body">
+                                    ${detailsHtml}
+                                </div>
+                            `;
+                            grid.appendChild(card);
+                        });
+
+                        // Render Upcoming Meetings Timeline
+                        const upcomingList = document.getElementById('upcoming-list');
+                        upcomingList.innerHTML = '';
+                        if (data.upcoming_meetings.length === 0) {
+                            upcomingList.innerHTML = `
+                                <div class="no-upcoming">
+                                    <i class="fa-regular fa-calendar-times"></i>
+                                    <p>No more upcoming meetings today.</p>
+                                </div>
+                            `;
+                        } else {
+                            data.upcoming_meetings.forEach(meeting => {
+                                const item = document.createElement('div');
+                                item.className = 'upcoming-item';
+                                item.innerHTML = `
+                                    <div class="upcoming-time-col">
+                                        <div class="upcoming-start">${meeting.start_time}</div>
+                                        <div class="upcoming-end">to ${meeting.end_time}</div>
+                                    </div>
+                                    <div class="upcoming-details-col">
+                                        <h4 class="upcoming-title">${meeting.purpose}</h4>
+                                        <div class="upcoming-meta">
+                                            <span><i class="fa-solid fa-door-closed text-indigo-400"></i> ${meeting.room_name}</span>
+                                            <span><i class="fa-regular fa-user"></i> ${meeting.organizer}</span>
+                                        </div>
+                                    </div>
+                                `;
+                                upcomingList.appendChild(item);
+                            });
+                        }
+                    }
+
+                    // Initial fetch and schedule every 30 seconds
+                    fetchKioskData();
+                    setInterval(fetchKioskData, 30000);
+                </script>
+            </body>
+        </html>
+    </template>
+</odoo>

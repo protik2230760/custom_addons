@@ -27,6 +27,20 @@
               sequence="100"
               groups="group_meeting_room_manager"/>
 
+    <!-- Kiosk Mode URL Action -->
+    <record id="action_meeting_room_booking_kiosk" model="ir.actions.act_url">
+        <field name="name">Kiosk Mode</field>
+        <field name="url">/meeting_room_booking/kiosk</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Kiosk Mode Menu Item next to Configuration -->
+    <menuitem id="menu_meeting_room_booking_kiosk"
+              name="Kiosk Mode"
+              parent="menu_meeting_room_booking_root"
+              action="action_meeting_room_booking_kiosk"
+              sequence="80"/>
+
     <!-- Settings Menu under Configuration -->
     <menuitem id="menu_meeting_room_booking_settings"
               name="Settings"

@@ -13,6 +13,7 @@
         'views/meeting_room_booking_views.xml',
         'views/meeting_room_views.xml',
         'views/res_config_settings_views.xml',
+        'views/kiosk_templates.xml',
         'views/meeting_room_booking_menus.xml',
     ],
     'assets': {
