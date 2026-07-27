@@ -16,6 +16,39 @@
                             <field name="meeting_room_booking_reminder_time"/>
                         </setting>
                     </block>
+                    <block title="Google Calendar Integration" name="google_calendar_integration">
+                        <setting string="Enable Google Calendar Sync" help="Automatically synchronize confirmed meetings to Google Calendar">
+                            <field name="module_meeting_room_booking_google_sync"/>
+                        </setting>
+                        <setting string="Google OAuth Credentials" help="Configure Google OAuth 2.0 credentials for synchronization" invisible="not module_meeting_room_booking_google_sync">
+                            <div class="content-group">
+                                <div class="row mt16">
+                                    <label for="google_client_id" class="col-lg-3 o_light_label"/>
+                                    <field name="google_client_id" placeholder="Enter Client ID..."/>
+                                </div>
+                                <div class="row mt8">
+                                    <label for="google_client_secret" class="col-lg-3 o_light_label"/>
+                                    <field name="google_client_secret" password="True" placeholder="Enter Client Secret..."/>
+                                </div>
+                                <div class="row mt8">
+                                    <label for="google_redirect_uri" class="col-lg-3 o_light_label"/>
+                                    <field name="google_redirect_uri" readonly="1" class="oe_inline"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="Google OAuth Connection" help="Connect Odoo to your Google Account" invisible="not module_meeting_room_booking_google_sync">
+                            <div class="content-group">
+                                <div class="row mt8 align-items-center">
+                                    <span class="fw-bold me-2">Connection Status:</span>
+                                    <field name="google_connection_status" widget="badge" decoration-success="google_connection_status == 'connected'" decoration-danger="google_connection_status == 'disconnected'" readonly="1"/>
+                                </div>
+                                <div class="mt16">
+                                    <button name="action_connect_google_calendar" type="object" string="Connect Google Account" class="btn btn-primary" invisible="google_connection_status == 'connected'"/>
+                                    <button name="action_disconnect_google_calendar" type="object" string="Disconnect Google Account" class="btn btn-secondary" invisible="google_connection_status == 'disconnected'"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
                 </app>
             </xpath>
         </field>

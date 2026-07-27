@@ -105,6 +105,32 @@ class MeetingRoomBooking(models.Model):
         'employee_id',
         string='Participants'
     )
+    google_event_id = fields.Char(
+        string='Google Event ID',
+        readonly=True,
+        copy=False
+    )
+    google_sync_status = fields.Selection([
+        ('not_synced', 'Not Synced'),
+        ('synced', 'Synced'),
+        ('pending', 'Pending Sync'),
+        ('failed', 'Sync Failed')
+    ], string='Google Sync Status', default='not_synced', readonly=True, copy=False)
+    google_last_sync = fields.Datetime(
+        string='Last Sync Time',
+        readonly=True,
+        copy=False
+    )
+    google_meet_url = fields.Char(
+        string='Google Meet URL',
+        readonly=True,
+        copy=False
+    )
+    google_sync_error = fields.Text(
+        string='Last Sync Error Log',
+        readonly=True,
+        copy=False
+    )
 
     @api.depends('status')
     def _compute_color_index(self):
@@ -322,6 +348,7 @@ class MeetingRoomBooking(models.Model):
             # Send message to chatter
             rec.message_post(body=_("Booking approved and confirmed."))
             rec._send_notification_email('meeting_room_booking.email_template_meeting_invitation')
+            rec.sync_booking_to_google()
 
     def action_reject(self):
         if not self.env.user.has_group('meeting_room_booking.group_meeting_room_manager'):
@@ -346,6 +373,7 @@ class MeetingRoomBooking(models.Model):
             rec.status = 'cancelled'
             rec.message_post(body=_("Booking cancelled."))
             rec._send_notification_email('meeting_room_booking.email_template_meeting_cancelled')
+            rec.delete_booking_from_google()
 
     def action_draft(self):
         if not self.env.user.has_group('meeting_room_booking.group_meeting_room_manager'):
@@ -369,7 +397,8 @@ class MeetingRoomBooking(models.Model):
 
     def write(self, vals):
         time_changed = False
-        if 'start_time' in vals or 'end_time' in vals or 'room_id' in vals:
+        sync_trigger_fields = {'start_time', 'end_time', 'room_id', 'participant_ids', 'purpose', 'description'}
+        if any(f in vals for f in sync_trigger_fields):
             time_changed = True
             
         res = super().write(vals)
@@ -378,7 +407,18 @@ class MeetingRoomBooking(models.Model):
             for rec in self:
                 if rec.status == 'confirmed':
                     rec._send_notification_email('meeting_room_booking.email_template_meeting_rescheduled')
+                    rec.sync_booking_to_google()
         return res
+
+    def unlink(self):
+        for rec in self:
+            if rec.google_event_id:
+                try:
+                    from ..services.google_calendar_service import delete_google_event
+                    delete_google_event(self.env, rec.google_event_id)
+                except Exception as e:
+                    _logger.warning("Failed to delete Google event on record deletion: %s" % str(e))
+        return super().unlink()
 
     def _send_notification_email(self, template_xml_id):
         enabled = self.env['ir.config_parameter'].sudo().get_param('meeting_room_booking.email_notifications', 'False')
@@ -406,12 +446,90 @@ class MeetingRoomBooking(models.Model):
             }
             template.send_mail(rec.id, force_send=True, email_values=email_values)
 
-class MeetingRoomBookingParticipant(models.Model):
-    _name = 'meeting.room.booking.participant'
-    _description = 'Meeting Participant'
+    @api.model
+    def _cron_refresh_google_token(self):
+        try:
+            from ..services.google_calendar_service import get_google_access_token
+            get_google_access_token(self.env)
+        except Exception as e:
+            _logger.warning("Failed to refresh Google token in cron: %s" % str(e))
 
-    booking_id = fields.Many2one('meeting.room.booking', string='Booking', ondelete='cascade')
-    employee_id = fields.Many2one('hr.employee', string='Employee Name', required=True)
-    job_title = fields.Char(related='employee_id.job_title', string='Job Position', readonly=True)
-    department_id = fields.Many2one('hr.department', related='employee_id.department_id', string='Department', readonly=True)
-    work_email = fields.Char(related='employee_id.work_email', string='Work Email', readonly=True)
+    @api.model
+    def _cron_retry_failed_sync(self):
+        failed_bookings = self.search([
+            ('status', '=', 'confirmed'),
+            ('google_sync_status', 'in', ('failed', 'pending'))
+        ])
+        if failed_bookings:
+            failed_bookings.sync_booking_to_google()
+
+    def sync_booking_to_google(self):
+        """
+        Syncs booking details to Google Calendar. Safe to run from actions or cron.
+        """
+        params = self.env['ir.config_parameter'].sudo()
+        sync_enabled = params.get_param('meeting_room_booking.google_sync_enabled') == 'True'
+        if not sync_enabled:
+            return
+            
+        for rec in self:
+            if rec.status != 'confirmed':
+                continue
+                
+            try:
+                if rec.google_event_id:
+                    from ..services.google_calendar_service import update_google_event
+                    meet_url = update_google_event(self.env, rec, rec.google_event_id)
+                    if meet_url:
+                        super(MeetingRoomBooking, rec).write({'google_meet_url': meet_url})
+                else:
+                    from ..services.google_calendar_service import create_google_event
+                    event_id, meet_url = create_google_event(self.env, rec)
+                    if event_id:
+                        super(MeetingRoomBooking, rec).write({
+                            'google_event_id': event_id,
+                            'google_meet_url': meet_url
+                        })
+                
+                super(MeetingRoomBooking, rec).write({
+                    'google_sync_status': 'synced',
+                    'google_last_sync': fields.Datetime.now(),
+                    'google_sync_error': False
+                })
+                rec.message_post(body=_("Google Calendar synchronization successful."))
+            except Exception as e:
+                status = 'failed'
+                if "Google Account is not connected" in str(e):
+                    status = 'pending'
+                super(MeetingRoomBooking, rec).write({
+                    'google_sync_status': status,
+                    'google_sync_error': str(e)
+                })
+                rec.message_post(body=_("Google Calendar synchronization failed. Error: %s") % str(e))
+
+    def delete_booking_from_google(self):
+        """
+        Removes booking event from Google Calendar.
+        """
+        params = self.env['ir.config_parameter'].sudo()
+        sync_enabled = params.get_param('meeting_room_booking.google_sync_enabled') == 'True'
+        if not sync_enabled:
+            return
+            
+        for rec in self:
+            if rec.google_event_id:
+                try:
+                    from ..services.google_calendar_service import delete_google_event
+                    delete_google_event(self.env, rec.google_event_id)
+                    super(MeetingRoomBooking, rec).write({
+                        'google_sync_status': 'not_synced',
+                        'google_meet_url': False,
+                        'google_event_id': False,
+                        'google_sync_error': False
+                    })
+                except Exception as e:
+                    super(MeetingRoomBooking, rec).write({
+                        'google_sync_status': 'failed',
+                        'google_sync_error': str(e)
+                    })
+                    rec.message_post(body=_("Failed to delete Google Calendar event: %s") % str(e))

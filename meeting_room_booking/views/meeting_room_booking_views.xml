@@ -59,6 +59,7 @@
                                         <field name="attendees_count" string="Attendees Count"/>
                                         <field name="organizer_id" widget="many2one_avatar_user" readonly="status != 'draft'" string="Organizer"/>
                                         <field name="participant_ids" widget="many2many_tags" placeholder="Select participants..." options="{'no_create': True}" readonly="status != 'draft'"/>
+                                        <field name="google_meet_url" widget="url" string="Join Meeting" readonly="1" invisible="not google_meet_url"/>
                                         <field name="ignore_conflicts" invisible="not has_participant_conflicts" widget="boolean_toggle"/>
                                     </group>
                                     <group string="When">
@@ -71,6 +72,21 @@
                                 <notebook>
                                     <page string="Meeting Agenda &amp; Details" name="description">
                                         <field name="description" placeholder="Add meeting links (e.g. Google Meet, Zoom), agenda topics, or notes..." widget="html"/>
+                                    </page>
+                                    <page string="Google Calendar Sync" name="google_calendar_sync" invisible="google_sync_status == 'not_synced' and not google_event_id">
+                                        <group>
+                                            <group string="Sync Status">
+                                                <field name="google_sync_status" widget="badge" decoration-success="google_sync_status == 'synced'" decoration-warning="google_sync_status == 'pending'" decoration-danger="google_sync_status == 'failed'"/>
+                                                <field name="google_event_id" readonly="1"/>
+                                                <field name="google_last_sync" readonly="1"/>
+                                            </group>
+                                            <group string="Conference Links" invisible="not google_meet_url">
+                                                <field name="google_meet_url" widget="url" readonly="1" text="Google Meet Video Link"/>
+                                            </group>
+                                        </group>
+                                        <group string="Last Sync Error Log" invisible="not google_sync_error">
+                                            <field name="google_sync_error" readonly="1" nolabel="1"/>
+                                        </group>
                                     </page>
                                 </notebook>
                             </sheet>
