@@ -390,15 +390,15 @@
                         position: relative;
                         box-sizing: border-box;
                         overflow: hidden;
-                        background-color: #f2f2f2;
+                        background-color: #ffffff;
                         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
                         margin: 0;
                         padding: 0;
-                        border-radius: 2.5mm;
-                        border: 0.2mm solid #cbd5e1;
+                        border-radius: 0;
+                        border: none;
                     }
                     .id-card-container.back {
-                        background-color: #f2f2f2;
+                        background-color: #ffffff;
                     }
                     img {
                         border: 0 !important;
@@ -427,7 +427,7 @@
 
                 <!-- FRONT SIDE PAGE -->
                 <t t-if="actual_print_side != 'back'">
-                    <div class="page front-page" t-att-style="'display: block !important; float: none !important; clear: both !important; width: 35mm; height: 63mm; padding: 4mm 0 0 0 !important; box-sizing: border-box !important; overflow: hidden !important; ' + ('page-break-after: avoid !important;' if (o_last and actual_print_side == 'front') else 'page-break-after: always !important;') + ' page-break-inside: avoid !important;'">
+                    <div class="page front-page" t-att-style="'display: block !important; float: none !important; clear: both !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-sizing: border-box !important; overflow: hidden !important; ' + ('page-break-after: avoid !important;' if (o_last and actual_print_side == 'front') else 'page-break-after: always !important;') + ' page-break-inside: avoid !important;'">
                     
                     <!-- 1. FRONT SIDE -->
                     <div class="id-card-container front">
@@ -499,7 +499,7 @@
  
                 <!-- BACK SIDE PAGE -->
                 <t t-if="actual_print_side != 'front'">
-                    <div class="page back-page" t-att-style="'display: block !important; float: none !important; clear: both !important; width: 35mm; height: 63mm; padding: 4mm 0 0 0 !important; box-sizing: border-box !important; overflow: hidden !important; page-break-inside: avoid !important; ' + ('page-break-after: always !important;' if not o_last else 'page-break-after: avoid !important;')">
+                    <div class="page back-page" t-att-style="'display: block !important; float: none !important; clear: both !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-sizing: border-box !important; overflow: hidden !important; page-break-inside: avoid !important; ' + ('page-break-after: always !important;' if not o_last else 'page-break-after: avoid !important;')">
 
                     <!-- 2. BACK SIDE -->
                     <div class="id-card-container back">
