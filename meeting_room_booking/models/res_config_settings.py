@@ -17,7 +17,7 @@ class ResConfigSettings(models.TransientModel):
         ('1440', '1 Day Before'),
     ], string="Meeting Reminder Time", config_parameter="meeting_room_booking.reminder_time", default='15')
 
-    module_meeting_room_booking_google_sync = fields.Boolean(
+    google_sync_enabled = fields.Boolean(
         string="Enable Google Calendar Sync",
         config_parameter="meeting_room_booking.google_sync_enabled",
         default=False

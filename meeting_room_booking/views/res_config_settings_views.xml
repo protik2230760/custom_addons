@@ -18,9 +18,9 @@
                     </block>
                     <block title="Google Calendar Integration" name="google_calendar_integration">
                         <setting string="Enable Google Calendar Sync" help="Automatically synchronize confirmed meetings to Google Calendar">
-                            <field name="module_meeting_room_booking_google_sync"/>
+                            <field name="google_sync_enabled"/>
                         </setting>
-                        <setting string="Google OAuth Credentials" help="Configure Google OAuth 2.0 credentials for synchronization" invisible="not module_meeting_room_booking_google_sync">
+                        <setting string="Google OAuth Credentials" help="Configure Google OAuth 2.0 credentials for synchronization" invisible="not google_sync_enabled">
                             <div class="content-group">
                                 <div class="row mt16">
                                     <label for="google_client_id" class="col-lg-3 o_light_label"/>
@@ -36,7 +36,7 @@
                                 </div>
                             </div>
                         </setting>
-                        <setting string="Google OAuth Connection" help="Connect Odoo to your Google Account" invisible="not module_meeting_room_booking_google_sync">
+                        <setting string="Google OAuth Connection" help="Connect Odoo to your Google Account" invisible="not google_sync_enabled">
                             <div class="content-group">
                                 <div class="row mt8 align-items-center">
                                     <span class="fw-bold me-2">Connection Status:</span>

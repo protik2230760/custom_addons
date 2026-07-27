@@ -1,8 +1,9 @@
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
-
+import logging
 from datetime import timedelta
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError, AccessError, UserError
+
+_logger = logging.getLogger(__name__)
 
 class MeetingRoomBooking(models.Model):
     _name = 'meeting.room.booking'
