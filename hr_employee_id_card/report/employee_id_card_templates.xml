@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="report_employee_id_card_template">
+    <template id="report_employee_id_card_layout">
         <t t-call="web.html_container">
+            <t t-set="actual_print_side" t-value="print_side or (request and request.params and request.params.get('print_side'))"/>
             <!-- Modern Premium Print Options Modal Styling -->
             <style type="text/css">
                 #print-options-modal {
@@ -425,8 +426,8 @@
                 </style>
 
                 <!-- FRONT SIDE PAGE -->
-                <t t-if="not (request and request.params and request.params.get('print_side')) or request.params.get('print_side') == 'front'">
-                    <div class="page front-page" t-att-style="'display: block !important; float: none !important; clear: both !important; width: 35mm; height: 63mm; padding: 4mm 0 0 0 !important; box-sizing: border-box !important; overflow: hidden !important; ' + ('page-break-after: avoid !important;' if (o_last and request and request.params and request.params.get('print_side') == 'front') else 'page-break-after: always !important;') + ' page-break-inside: avoid !important;'">
+                <t t-if="actual_print_side != 'back'">
+                    <div class="page front-page" t-att-style="'display: block !important; float: none !important; clear: both !important; width: 35mm; height: 63mm; padding: 4mm 0 0 0 !important; box-sizing: border-box !important; overflow: hidden !important; ' + ('page-break-after: avoid !important;' if (o_last and actual_print_side == 'front') else 'page-break-after: always !important;') + ' page-break-inside: avoid !important;'">
                     
                     <!-- 1. FRONT SIDE -->
                     <div class="id-card-container front">
@@ -497,7 +498,7 @@
                 </t>
  
                 <!-- BACK SIDE PAGE -->
-                <t t-if="not (request and request.params and request.params.get('print_side')) or request.params.get('print_side') == 'back'">
+                <t t-if="actual_print_side != 'front'">
                     <div class="page back-page" t-att-style="'display: block !important; float: none !important; clear: both !important; width: 35mm; height: 63mm; padding: 4mm 0 0 0 !important; box-sizing: border-box !important; overflow: hidden !important; page-break-inside: avoid !important; ' + ('page-break-after: always !important;' if not o_last else 'page-break-after: avoid !important;')">
 
                     <!-- 2. BACK SIDE -->
@@ -569,5 +570,32 @@
                         </div>
                     </div>
                 </div></t></div></t></t>
+    </template>
+
+    <template id="report_employee_id_card_template">
+        <t t-call="web.html_container">
+            <t t-call="hr_employee_id_card.report_employee_id_card_layout"/>
+        </t>
+    </template>
+
+    <template id="report_employee_id_card_front">
+        <t t-call="web.html_container">
+            <t t-set="print_side" t-value="'front'"/>
+            <t t-call="hr_employee_id_card.report_employee_id_card_layout"/>
+        </t>
+    </template>
+
+    <template id="report_employee_id_card_back">
+        <t t-call="web.html_container">
+            <t t-set="print_side" t-value="'back'"/>
+            <t t-call="hr_employee_id_card.report_employee_id_card_layout"/>
+        </t>
+    </template>
+
+    <template id="report_employee_id_card_both">
+        <t t-call="web.html_container">
+            <t t-set="print_side" t-value="'both'"/>
+            <t t-call="hr_employee_id_card.report_employee_id_card_layout"/>
+        </t>
     </template>
 </odoo>

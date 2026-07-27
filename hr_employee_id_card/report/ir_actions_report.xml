@@ -18,11 +18,47 @@
     </record>
 
     <record id="action_report_employee_id_card" model="ir.actions.report">
-        <field name="name">Custom ID Card</field>
+        <field name="name">Custom ID Card (Preview)</field>
         <field name="model">hr.employee</field>
         <field name="report_type">qweb-html</field>
         <field name="report_name">hr_employee_id_card.report_employee_id_card_template</field>
         <field name="report_file">hr_employee_id_card.report_employee_id_card_template</field>
+        <field name="print_report_name">'ID_Card_%s' % (object.name)</field>
+        <field name="binding_model_id" ref="hr.model_hr_employee"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_employee_id_card"/>
+    </record>
+
+    <record id="action_report_employee_id_card_front" model="ir.actions.report">
+        <field name="name">Custom ID Card (Front)</field>
+        <field name="model">hr.employee</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">hr_employee_id_card.report_employee_id_card_front</field>
+        <field name="report_file">hr_employee_id_card.report_employee_id_card_front</field>
+        <field name="print_report_name">'ID_Card_Front_%s' % (object.name)</field>
+        <field name="binding_model_id" ref="hr.model_hr_employee"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_employee_id_card"/>
+    </record>
+
+    <record id="action_report_employee_id_card_back" model="ir.actions.report">
+        <field name="name">Custom ID Card (Back)</field>
+        <field name="model">hr.employee</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">hr_employee_id_card.report_employee_id_card_back</field>
+        <field name="report_file">hr_employee_id_card.report_employee_id_card_back</field>
+        <field name="print_report_name">'ID_Card_Back_%s' % (object.name)</field>
+        <field name="binding_model_id" ref="hr.model_hr_employee"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_employee_id_card"/>
+    </record>
+
+    <record id="action_report_employee_id_card_both" model="ir.actions.report">
+        <field name="name">Custom ID Card (Both)</field>
+        <field name="model">hr.employee</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">hr_employee_id_card.report_employee_id_card_both</field>
+        <field name="report_file">hr_employee_id_card.report_employee_id_card_both</field>
         <field name="print_report_name">'ID_Card_%s' % (object.name)</field>
         <field name="binding_model_id" ref="hr.model_hr_employee"/>
         <field name="binding_type">report</field>
