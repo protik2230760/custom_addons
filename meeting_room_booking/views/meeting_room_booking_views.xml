@@ -33,6 +33,7 @@
                                 <field name="status" widget="statusbar" statusbar_visible="draft,confirmed,done"/>
                             </header>
                             <sheet>
+                                <field name="has_participant_conflicts" invisible="1"/>
                                 <widget name="web_ribbon" title="Confirmed" bg_color="text-bg-success" invisible="status != 'confirmed'"/>
                                 <widget name="web_ribbon" title="Done" bg_color="text-bg-primary" invisible="status != 'done'"/>
                                 <widget name="web_ribbon" title="Rejected" bg_color="text-bg-danger" invisible="status != 'rejected'"/>
@@ -58,7 +59,6 @@
                                         <field name="attendees_count" string="Attendees Count"/>
                                         <field name="organizer_id" widget="many2one_avatar_user" readonly="status != 'draft'" string="Organizer"/>
                                         <field name="participant_ids" widget="many2many_tags" placeholder="Select participants..." options="{'no_create': True}" readonly="status != 'draft'"/>
-                                        <field name="has_participant_conflicts" invisible="1"/>
                                         <field name="ignore_conflicts" invisible="not has_participant_conflicts" widget="boolean_toggle"/>
                                     </group>
                                     <group string="When">
