@@ -57,6 +57,7 @@
                                         <field name="room_id" options="{'no_create': True, 'no_open': False}" placeholder="Choose a meeting room..." domain="[('active', '=', True), ('capacity', '>=', attendees_count)]"/>
                                         <field name="attendees_count" string="Attendees Count"/>
                                         <field name="organizer_id" widget="many2one_avatar_user" readonly="status != 'draft'" string="Organizer"/>
+                                        <field name="participant_ids" widget="many2many_tags" placeholder="Select participants..." options="{'no_create': True}" readonly="status != 'draft'"/>
                                         <field name="has_participant_conflicts" invisible="1"/>
                                         <field name="ignore_conflicts" invisible="not has_participant_conflicts" widget="boolean_toggle"/>
                                     </group>
@@ -68,16 +69,6 @@
                                 </group>
             
                                 <notebook>
-                                    <page string="Participants" name="participants">
-                                        <field name="participant_ids" mode="list">
-                                            <list editable="bottom">
-                                                <field name="employee_id" options="{'no_create': True}"/>
-                                                <field name="job_title"/>
-                                                <field name="department_id"/>
-                                                <field name="work_email"/>
-                                            </list>
-                                        </field>
-                                    </page>
                                     <page string="Meeting Agenda &amp; Details" name="description">
                                         <field name="description" placeholder="Add meeting links (e.g. Google Meet, Zoom), agenda topics, or notes..." widget="html"/>
                                     </page>

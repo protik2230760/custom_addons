@@ -98,9 +98,11 @@ class MeetingRoomBooking(models.Model):
         string='Has Participant Conflicts',
         compute='_compute_participant_conflicts'
     )
-    participant_ids = fields.One2many(
-        'meeting.room.booking.participant',
+    participant_ids = fields.Many2many(
+        'hr.employee',
+        'meeting_room_booking_employee_rel',
         'booking_id',
+        'employee_id',
         string='Participants'
     )
 
@@ -136,20 +138,20 @@ class MeetingRoomBooking(models.Model):
             else:
                 rec.duration = 0.0
 
-    @api.depends('start_time', 'end_time', 'participant_ids.employee_id', 'status')
+    @api.depends('start_time', 'end_time', 'participant_ids', 'status')
     def _compute_participant_conflicts(self):
         for rec in self:
             if not rec.start_time or not rec.end_time or not rec.participant_ids or rec.status in ('cancelled', 'rejected'):
                 rec.has_participant_conflicts = False
                 continue
             
-            employees = rec.participant_ids.mapped('employee_id')
+            employees = rec.participant_ids
             overlap_bookings = self.search([
                 ('status', '=', 'confirmed'),
                 ('start_time', '<', rec.end_time),
                 ('end_time', '>', rec.start_time),
                 ('id', '!=', rec._origin.id if rec._origin else rec.id),
-                ('participant_ids.employee_id', 'in', employees.ids)
+                ('participant_ids', 'in', employees.ids)
             ])
             rec.has_participant_conflicts = bool(overlap_bookings)
 
@@ -326,18 +328,18 @@ class MeetingRoomBooking(models.Model):
             # Check participant conflicts
             if rec.has_participant_conflicts and not rec.ignore_conflicts:
                 conflicts = []
-                employees = rec.participant_ids.mapped('employee_id')
+                employees = rec.participant_ids
                 overlap_bookings = self.search([
                     ('status', '=', 'confirmed'),
                     ('start_time', '<', rec.end_time),
                     ('end_time', '>', rec.start_time),
                     ('id', '!=', rec.id),
-                    ('participant_ids.employee_id', 'in', employees.ids)
+                    ('participant_ids', 'in', employees.ids)
                 ])
                 for b in overlap_bookings:
                     for p in b.participant_ids:
-                        if p.employee_id in employees:
-                            conflicts.append("%s is already busy in '%s'" % (p.employee_id.name, b.purpose or b.name))
+                        if p in employees:
+                            conflicts.append("%s is already busy in '%s'" % (p.name, b.purpose or b.name))
                 
                 raise UserError(_(
                     "Conflict detected: The following participants are already busy in another meeting:\n%s\n\n"
