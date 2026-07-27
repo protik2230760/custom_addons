@@ -256,7 +256,7 @@ class MeetingRoomBooking(models.Model):
                 
             domain = [
                 ('room_id', '=', rec.room_id.id),
-                ('status', 'in', ('draft', 'confirmed')),
+                ('status', '=', 'confirmed'),
                 ('start_time', '<', rec.end_time),
                 ('end_time', '>', rec.start_time),
             ]
@@ -302,7 +302,7 @@ class MeetingRoomBooking(models.Model):
                 }
             domain = [
                 ('room_id', '=', self.room_id._origin.id if hasattr(self.room_id, '_origin') else self.room_id.id),
-                ('status', 'in', ('draft', 'confirmed')),
+                ('status', '=', 'confirmed'),
                 ('start_time', '<', self.end_time),
                 ('end_time', '>', self.start_time),
             ]
