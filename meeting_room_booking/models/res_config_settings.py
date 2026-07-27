@@ -74,7 +74,7 @@ class ResConfigSettings(models.TransientModel):
         return {
             'type': 'ir.actions.act_url',
             'url': url,
-            'target': 'new',
+            'target': 'self',
         }
 
     def action_disconnect_google_calendar(self):
