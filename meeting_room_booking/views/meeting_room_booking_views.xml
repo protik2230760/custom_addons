@@ -67,6 +67,7 @@
                                         <field name="start_time" string="Start Time"/>
                                         <field name="end_time" string="End Time"/>
                                         <field name="duration" widget="float_time" readonly="1"/>
+                                        <button name="action_open_kiosk" string="Open Kiosk Mode" type="object" class="btn-link" icon="fa-desktop"/>
                                     </group>
                                 </group>
             
