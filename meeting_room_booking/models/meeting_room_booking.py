@@ -69,6 +69,9 @@ class MeetingRoomBooking(models.Model):
 
     attendees_count = fields.Integer(
         string='Number of Attendees',
+        compute='_compute_attendees_count',
+        store=True,
+        readonly=False,
         default=1,
         tracking=True
     )
@@ -146,6 +149,11 @@ class MeetingRoomBooking(models.Model):
                 rec.color_index = 1   # Red
             else:
                 rec.color_index = 0   # Gray
+
+    @api.depends('participant_ids')
+    def _compute_attendees_count(self):
+        for rec in self:
+            rec.attendees_count = len(rec.participant_ids) + 1
 
     @api.depends('organizer_id')
     def _compute_department_id(self):
