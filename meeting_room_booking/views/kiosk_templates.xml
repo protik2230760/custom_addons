@@ -11,12 +11,13 @@
                 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
                 <style>
                     body {
-                        background-color: #0f172a;
-                        color: #e2e8f0;
+                        background-color: #f1f5f9;
+                        color: #1e293b;
                         font-family: 'Outfit', sans-serif;
                         margin: 0;
                         padding: 0;
                         min-height: 100vh;
+                        background-image: radial-gradient(at 0% 0%, rgba(99,102,241,0.05) 0px, transparent 50%), radial-gradient(at 50% 0%, rgba(139,92,246,0.05) 0px, transparent 50%);
                     }
                     .kiosk-container {
                         max-width: 1400px;
@@ -26,11 +27,11 @@
                     }
                     /* Glassmorphism background effect */
                     .kiosk-header, .summary-card, .room-card, .upcoming-sidebar, .upcoming-item {
-                        background: rgba(30, 41, 59, 0.7);
-                        border: 1px solid rgba(255, 255, 255, 0.08);
+                        background: rgba(255, 255, 255, 0.7);
+                        border: 1px solid rgba(255, 255, 255, 0.6);
                         backdrop-filter: blur(16px);
                         border-radius: 16px;
-                        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+                        box-shadow: 0 10px 30px -10px rgba(148, 163, 184, 0.12);
                     }
                     .kiosk-header {
                         display: flex;
@@ -46,14 +47,14 @@
                     }
                     .logo-icon {
                         font-size: 28px;
-                        color: #6366f1;
-                        text-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+                        color: #4f46e5;
+                        text-shadow: 0 0 12px rgba(79, 70, 229, 0.2);
                     }
                     .header-title {
                         font-size: 24px;
                         font-weight: 700;
                         letter-spacing: -0.5px;
-                        background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+                        background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
                         -webkit-background-clip: text;
                         -webkit-text-fill-color: transparent;
                     }
@@ -63,12 +64,12 @@
                     #clock-time {
                         font-size: 26px;
                         font-weight: 800;
-                        color: #818cf8;
-                        text-shadow: 0 0 10px rgba(129, 140, 248, 0.3);
+                        color: #4f46e5;
+                        text-shadow: 0 0 10px rgba(79, 70, 229, 0.15);
                     }
                     #clock-date {
                         font-size: 14px;
-                        color: #94a3b8;
+                        color: #475569;
                         margin-top: 4px;
                     }
                     .summary-cards {
@@ -82,10 +83,11 @@
                         text-align: center;
                         position: relative;
                         overflow: hidden;
-                        transition: transform 0.2s;
+                        transition: transform 0.2s, box-shadow 0.2s;
                     }
                     .summary-card:hover {
                         transform: translateY(-2px);
+                        box-shadow: 0 15px 35px -10px rgba(148, 163, 184, 0.2);
                     }
                     .summary-value {
                         font-size: 36px;
@@ -93,7 +95,7 @@
                     }
                     .summary-label {
                         font-size: 14px;
-                        color: #94a3b8;
+                        color: #64748b;
                         margin-top: 6px;
                         display: flex;
                         align-items: center;
@@ -107,20 +109,18 @@
                         display: inline-block;
                     }
                     .dot.green {
-                        background-color: #22c55e;
-                        box-shadow: 0 0 8px #22c55e;
+                        background-color: #10b981;
+                        box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
                     }
                     .dot.red {
                         background-color: #ef4444;
-                        box-shadow: 0 0 8px #ef4444;
+                        box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
                     }
                     .summary-card.available .summary-value {
-                        color: #4ade80;
-                        text-shadow: 0 0 10px rgba(74, 222, 128, 0.2);
+                        color: #059669;
                     }
                     .summary-card.occupied .summary-value {
-                        color: #f87171;
-                        text-shadow: 0 0 10px rgba(248, 113, 113, 0.2);
+                        color: #dc2626;
                     }
                     .kiosk-main {
                         display: grid;
@@ -130,7 +130,7 @@
                     .section-heading {
                         font-size: 18px;
                         font-weight: 700;
-                        color: #f1f5f9;
+                        color: #0f172a;
                         margin: 0 0 16px 0;
                         display: flex;
                         align-items: center;
@@ -145,24 +145,22 @@
                         display: flex;
                         flex-direction: column;
                         justify-content: space-between;
-                        transition: border-color 0.3s, box-shadow 0.3s;
+                        transition: transform 0.2s, box-shadow 0.2s;
                     }
-                    .room-card-header {
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: flex-start;
-                        margin-bottom: 12px;
+                    .room-card:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 15px 35px -10px rgba(148, 163, 184, 0.2);
                     }
                     .room-name {
                         font-size: 20px;
                         font-weight: 700;
                         margin: 0;
-                        color: #ffffff;
+                        color: #0f172a;
                     }
                     .room-location {
                         font-size: 12px;
-                        color: #94a3b8;
-                        margin-top: 2px;
+                        color: #64748b;
+                        margin-top: 4px;
                         display: block;
                     }
                     .status-badge {
@@ -175,24 +173,24 @@
                         gap: 6px;
                     }
                     .status-available {
-                        border-left: 5px solid #22c55e;
+                        border-left: 5px solid #10b981;
                     }
                     .status-available .status-badge {
-                        background-color: rgba(34, 197, 94, 0.15);
-                        color: #4ade80;
-                        border: 1px solid rgba(74, 222, 128, 0.2);
+                        background-color: #d1fae5;
+                        color: #065f46;
+                        border: 1px solid #a7f3d0;
                     }
                     .status-occupied {
                         border-left: 5px solid #ef4444;
                     }
                     .status-occupied .status-badge {
-                        background-color: rgba(239, 68, 68, 0.15);
-                        color: #f87171;
-                        border: 1px solid rgba(248, 113, 113, 0.2);
+                        background-color: #fee2e2;
+                        color: #991b1b;
+                        border: 1px solid #fca5a5;
                     }
                     .room-capacity {
                         font-size: 13px;
-                        color: #cbd5e1;
+                        color: #475569;
                         margin-bottom: 12px;
                     }
                     .amenities-container {
@@ -202,47 +200,48 @@
                         margin-bottom: 16px;
                     }
                     .amenity-pill {
-                        background-color: rgba(148, 163, 184, 0.1);
-                        color: #94a3b8;
+                        background-color: #f1f5f9;
+                        color: #475569;
                         padding: 2px 8px;
                         border-radius: 6px;
                         font-size: 11px;
-                        border: 1px solid rgba(148, 163, 184, 0.15);
+                        border: 1px solid #e2e8f0;
                     }
                     .room-card-body {
-                        border-top: 1px solid rgba(255, 255, 255, 0.05);
+                        border-top: 1px solid #e2e8f0;
                         padding-top: 16px;
                     }
                     .meeting-details-box {
-                        background-color: rgba(239, 68, 68, 0.05);
-                        border: 1px solid rgba(239, 68, 68, 0.15);
+                        background-color: #fff1f2;
+                        border: 1px solid #ffe4e6;
                         padding: 12px 14px;
                         border-radius: 8px;
                     }
                     .meeting-purpose {
                         font-size: 14px;
                         font-weight: 600;
-                        color: #f87171;
+                        color: #be123c;
                         margin-bottom: 6px;
                     }
                     .meeting-meta {
                         font-size: 12px;
-                        color: #cbd5e1;
+                        color: #475569;
                         display: flex;
                         gap: 15px;
                     }
                     .meeting-meta i {
-                        color: #ef4444;
+                        color: #e11d48;
                     }
                     .meeting-next-box {
                         font-size: 13px;
-                        color: #94a3b8;
-                        background-color: rgba(255, 255, 255, 0.02);
+                        color: #64748b;
+                        background-color: #f8fafc;
                         padding: 8px 12px;
                         border-radius: 8px;
                         display: flex;
                         flex-direction: column;
                         gap: 2px;
+                        border: 1px solid #f1f5f9;
                     }
                     .next-label {
                         font-size: 10px;
@@ -252,15 +251,15 @@
                     .next-time {
                         font-size: 14px;
                         font-weight: 700;
-                        color: #818cf8;
+                        color: #4f46e5;
                     }
                     .next-title {
                         font-size: 12px;
-                        color: #cbd5e1;
+                        color: #334155;
                     }
                     .meeting-free-box {
                         font-size: 13px;
-                        color: #4ade80;
+                        color: #059669;
                         display: flex;
                         align-items: center;
                     }
@@ -280,24 +279,24 @@
                         transition: transform 0.2s;
                     }
                     .upcoming-item:hover {
-                        transform: translateX(2px);
+                        transform: translateX(4px);
                     }
                     .upcoming-time-col {
                         display: flex;
                         flex-direction: column;
                         justify-content: center;
-                        border-right: 2px solid rgba(99, 102, 241, 0.2);
+                        border-right: 2px solid #e2e8f0;
                         padding-right: 12px;
                         min-width: 75px;
                     }
                     .upcoming-start {
                         font-size: 13px;
                         font-weight: 700;
-                        color: #818cf8;
+                        color: #4f46e5;
                     }
                     .upcoming-end {
                         font-size: 10px;
-                        color: #94a3b8;
+                        color: #64748b;
                         margin-top: 2px;
                     }
                     .upcoming-details-col {
@@ -308,19 +307,19 @@
                     .upcoming-title {
                         font-size: 14px;
                         font-weight: 600;
-                        color: #f1f5f9;
+                        color: #0f172a;
                         margin: 0 0 4px 0;
                     }
                     .upcoming-meta {
                         font-size: 11px;
-                        color: #94a3b8;
+                        color: #64748b;
                         display: flex;
                         gap: 12px;
                     }
                     .no-upcoming {
                         text-align: center;
                         padding: 40px 0;
-                        color: #64748b;
+                        color: #94a3b8;
                     }
                     .no-upcoming i {
                         font-size: 32px;
@@ -462,7 +461,7 @@
                                 <div class="room-card-header">
                                     <div class="room-info">
                                         <h3 class="room-name">${room.name}</h3>
-                                        <span class="room-location">${room.building ? room.building + ', ' : ''}Floor ${room.floor || 'N/A'}</span>
+                                        ${(room.building || room.floor) ? '<span class="room-location"><i class="fa-solid fa-location-dot me-1"></i>' + (room.building ? room.building : '') + (room.building &amp;&amp; room.floor ? ', ' : '') + (room.floor ? 'Floor ' + room.floor : '') + '</span>' : ''}
                                     </div>
                                     <span class="status-badge"><i class="fa-solid ${statusIcon}"></i> ${statusText}</span>
                                 </div>
