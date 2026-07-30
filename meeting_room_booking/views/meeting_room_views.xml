@@ -23,6 +23,7 @@
                 <field name="location"/>
                 <field name="floor"/>
                 <field name="building"/>
+                <field name="work_location_id"/>
                 <field name="status" widget="badge" decoration-success="status == 'available'" decoration-warning="status == 'maintenance'" decoration-danger="status == 'out_of_service'"/>
                 <field name="amenity_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
                 <field name="active" widget="boolean_toggle"/>
@@ -54,6 +55,7 @@
                             <field name="location" placeholder="e.g. 2nd Floor, Wing B"/>
                             <field name="floor"/>
                             <field name="building"/>
+                            <field name="work_location_id" options="{'no_create': True}"/>
                         </group>
                         <group>
                             <field name="status" widget="radio" options="{'horizontal': true}"/>

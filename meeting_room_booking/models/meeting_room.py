@@ -23,6 +23,7 @@ class MeetingRoom(models.Model):
     location = fields.Char(string='Location')
     floor = fields.Char(string='Floor')
     building = fields.Char(string='Building')
+    work_location_id = fields.Many2one('hr.work.location', string='Work Location')
     status = fields.Selection([
         ('available', 'Available'),
         ('maintenance', 'Under Maintenance'),

@@ -54,4 +54,11 @@
               parent="menu_meeting_room_booking_configuration"
               action="action_meeting_room_amenity"
               sequence="10"/>
+
+    <!-- Work Locations Menu under Configuration -->
+    <menuitem id="menu_meeting_room_booking_work_locations"
+              name="Work Locations"
+              parent="menu_meeting_room_booking_configuration"
+              action="hr.hr_work_location_action"
+              sequence="15"/>
 </odoo>

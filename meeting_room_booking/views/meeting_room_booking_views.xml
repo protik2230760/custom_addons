@@ -8,6 +8,8 @@
             <list string="Bookings" decoration-info="status == 'draft'" decoration-success="status == 'confirmed'" decoration-muted="status in ('cancelled', 'rejected')" decoration-primary="status == 'done'">
                             <field name="name"/>
                             <field name="room_id"/>
+                            <field name="room_location" optional="hide"/>
+                            <field name="work_location_id" optional="show"/>
                             <field name="purpose"/>
                             <field name="organizer_id" widget="many2one_avatar_user"/>
                             <field name="start_time"/>
@@ -56,6 +58,8 @@
                                 <group>
                                     <group string="Where &amp; Who">
                                         <field name="room_id" options="{'no_create': True, 'no_open': False}" placeholder="Choose a meeting room..." domain="[('active', '=', True), ('capacity', '>=', attendees_count)]"/>
+                                        <field name="room_location" string="Room Location"/>
+                                        <field name="work_location_id" options="{'no_create': True}"/>
                                         <field name="attendees_count" string="Attendees Count"/>
                                         <field name="organizer_id" widget="many2one_avatar_user" readonly="status != 'draft'" string="Organizer"/>
                                         <field name="participant_ids" widget="many2many_tags" placeholder="Select participants..." options="{'no_create': True}" readonly="status != 'draft'"/>
@@ -102,7 +106,7 @@
         <field name="model">meeting.room.booking</field>
         <field name="arch" type="xml">
             <calendar string="Bookings" date_start="start_time" date_stop="end_time" color="color_index" quick_create="0" mode="week" js_class="meeting_room_booking_calendar">
-                            <field name="room_id"/>
+                            <field name="room_id" filters="1"/>
                             <field name="organizer_id" avatar_field="avatar_128"/>
                             <field name="purpose"/>
                             <field name="status"/>
@@ -159,6 +163,8 @@
                 <field name="organizer_id" string="Organizer"/>
                 <field name="purpose" string="Purpose"/>
                 <field name="department_id" string="Department"/>
+                <field name="room_location" string="Room Location"/>
+                <field name="work_location_id" string="Work Location"/>
 
                 <!-- Quick Filters -->
                 <filter string="My Bookings" name="my_bookings" domain="[('organizer_id', '=', uid)]"/>
@@ -175,6 +181,8 @@
                 <!-- Group By Options -->
                 <group name="group_by">
                     <filter string="Meeting Room" name="group_by_room" domain="[]" context="{'group_by': 'room_id'}"/>
+                    <filter string="Room Location" name="group_by_location" domain="[]" context="{'group_by': 'room_location'}"/>
+                    <filter string="Work Location" name="group_by_work_location" domain="[]" context="{'group_by': 'work_location_id'}"/>
                     <filter string="Organizer" name="group_by_organizer" domain="[]" context="{'group_by': 'organizer_id'}"/>
                     <filter string="Status" name="group_by_status" domain="[]" context="{'group_by': 'status'}"/>
                     <filter string="Department" name="group_by_department" domain="[]" context="{'group_by': 'department_id'}"/>

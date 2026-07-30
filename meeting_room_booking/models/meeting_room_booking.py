@@ -25,6 +25,20 @@ class MeetingRoomBooking(models.Model):
         domain=[('active', '=', True)],
         tracking=True
     )
+    room_location = fields.Char(
+        string='Room Location',
+        related='room_id.location',
+        store=True,
+        readonly=True
+    )
+    work_location_id = fields.Many2one(
+        'hr.work.location',
+        string='Work Location',
+        compute='_compute_work_location_id',
+        store=True,
+        readonly=False,
+        tracking=True
+    )
     booking_date = fields.Date(
         string='Booking Date',
         compute='_compute_booking_date',
@@ -150,6 +164,14 @@ class MeetingRoomBooking(models.Model):
             else:
                 rec.color_index = 0   # Gray
 
+    @api.depends('room_id')
+    def _compute_work_location_id(self):
+        for rec in self:
+            if rec.room_id and rec.room_id.work_location_id:
+                rec.work_location_id = rec.room_id.work_location_id.id
+            else:
+                rec.work_location_id = False
+
     @api.depends('participant_ids')
     def _compute_attendees_count(self):
         for rec in self:
@@ -256,7 +278,7 @@ class MeetingRoomBooking(models.Model):
                 
             domain = [
                 ('room_id', '=', rec.room_id.id),
-                ('status', '=', 'confirmed'),
+                ('status', 'in', ('draft', 'confirmed', 'done')),
                 ('start_time', '<', rec.end_time),
                 ('end_time', '>', rec.start_time),
             ]
@@ -302,7 +324,7 @@ class MeetingRoomBooking(models.Model):
                 }
             domain = [
                 ('room_id', '=', self.room_id._origin.id if hasattr(self.room_id, '_origin') else self.room_id.id),
-                ('status', '=', 'confirmed'),
+                ('status', 'in', ('draft', 'confirmed', 'done')),
                 ('start_time', '<', self.end_time),
                 ('end_time', '>', self.start_time),
             ]
@@ -354,6 +376,16 @@ class MeetingRoomBooking(models.Model):
                 ) % "\n".join(set(conflicts)))
 
             rec.status = 'confirmed'
+            
+            # Automatically assign work location to organizer and participants
+            if rec.work_location_id:
+                if rec.organizer_id:
+                    org_emp = self.env['hr.employee'].search([('user_id', '=', rec.organizer_id.id)], limit=1)
+                    if org_emp:
+                        org_emp.work_location_id = rec.work_location_id.id
+                for participant in rec.participant_ids:
+                    participant.work_location_id = rec.work_location_id.id
+            
             # Send message to chatter
             rec.message_post(body=_("Booking approved and confirmed."))
             rec._send_notification_email('meeting_room_booking.email_template_meeting_invitation')
